@@ -4,7 +4,7 @@ from PyPDF2 import PdfReader
 import anthropic
 import re
 
-def summarize_with_anthropic(api_key, text, model="claude-3-sonnet-20240620"):
+def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
     client = anthropic.Anthropic(api_key=api_key)
     
     try:
@@ -61,7 +61,7 @@ if api_key:
     client = anthropic.Anthropic(api_key=api_key)
     try:
         response = client.messages.create(
-            model="claude-3-sonnet-20240620",
+            model="claude-3-5-sonnet-20240620",
             max_tokens=10,
             messages=[
                 {"role": "user", "content": "Hello, World!"}
