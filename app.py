@@ -58,16 +58,20 @@ api_key = st.text_input("Anthropic API Key를 입력하세요", type="password")
 
 # API 키 검증
 if api_key:
+    client = anthropic.Anthropic(api_key=api_key)
     try:
-        client = anthropic.Anthropic(api_key=api_key)
-        client.messages.create(
-            model="claude-3-sonnet-20240320",
-            max_tokens=10,
-            messages=[{"role": "user", "content": "Hello"}]
+        # API 키 유효성을 간단히 확인하는 요청
+        response = client.completions.create(
+            model="claude-2.1",
+            max_tokens_to_sample=10,
+            prompt="Hello, World!",
         )
-        st.success("API 키가 유효합니다.")
-    except anthropic.APIError:
-        st.error("유효하지 않은 API 키입니다. 다시 확인해주세요.")
+        if response:
+            st.success("API 키가 유효합니다.")
+        else:
+            st.error("API 응답을 받지 못했습니다. API 키를 다시 확인해주세요.")
+    except Exception as e:
+        st.error(f"API 키 검증 중 오류가 발생했습니다: {str(e)}")
         api_key = None
 
 # 파일 업로드 섹션
