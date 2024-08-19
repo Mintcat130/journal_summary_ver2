@@ -152,5 +152,5 @@ if st.button("요약하기"):
             
             except requests.exceptions.RequestException as e:
                     st.error(f"URL 요청 중 오류 발생: {str(e)}")
-                except Exception as e:
+            except Exception as e:
                     st.error(f"예상치 못한 오류 발생: {str(e)}")
