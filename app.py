@@ -2,8 +2,9 @@ import streamlit as st
 import requests
 from PyPDF2 import PdfReader
 import anthropic
+import re
 
-def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
+def summarize_with_anthropic(api_key, text, model="claude-3-sonnet-20240320"):
     client = anthropic.Anthropic(api_key=api_key)
     
     try:
@@ -48,23 +49,6 @@ Text to summarize:
     except anthropic.APIError as e:
         st.error(f"API 오류: {str(e)}")
         return "Error: Failed to summarize the text."
- 
-    
-    payload = {
-        "model": model,
-        "prompt": prompt,
-        "max_tokens_to_sample": 3000,
-        "temperature": 0.7
-    }
-    
-    response = requests.post(url, headers=headers, json=payload)
-    
-    if response.status_code == 200:
-        result = response.json()
-        return result.get("completion", "").strip()
-    else:
-        st.write(f"Error: {response.status_code} - {response.text}")
-        return "Error: Failed to summarize the text."
 
 # Streamlit 앱 시작
 st.title("논문 요약 웹앱")
@@ -77,7 +61,7 @@ if api_key:
     try:
         client = anthropic.Anthropic(api_key=api_key)
         client.messages.create(
-            model="claude-3-5-sonnet-20240620",
+            model="claude-3-sonnet-20240320",
             max_tokens=10,
             messages=[{"role": "user", "content": "Hello"}]
         )
@@ -85,7 +69,7 @@ if api_key:
     except anthropic.APIError:
         st.error("유효하지 않은 API 키입니다. 다시 확인해주세요.")
         api_key = None
-        
+
 # 파일 업로드 섹션
 uploaded_file = st.file_uploader("PDF 파일을 업로드하세요", type=["pdf"])
 
@@ -102,22 +86,20 @@ if st.button("요약하기"):
             for page in pdf_reader.pages:
                 text += page.extract_text()
             
-           # Anthropic API를 사용하여 요약을 수행합니다.
+            # Anthropic API를 사용하여 요약을 수행합니다.
             summary = summarize_with_anthropic(api_key, text)
             
             # 요약 결과 처리 및 출력
+            summary_content = summary
             if summary.startswith("TextBlock(text='"):
                 # TextBlock 형식에서 실제 내용만 추출
                 summary_content = re.search(r"text='(.*?)'", summary, re.DOTALL).group(1)
-                # 이스케이프된 줄바꿈 문자를 실제 줄바꿈으로 변환
-                summary_content = summary_content.replace('\\n', '\n')
-                # <summary> 태그 제거
-                summary_content = re.sub(r'</?summary>', '', summary_content).strip()
-                
-                st.markdown(summary_content)
-            else:
-                st.markdown(summary)
-
+            # 이스케이프된 줄바꿈 문자를 실제 줄바꿈으로 변환
+            summary_content = summary_content.replace('\\n', '\n')
+            # <summary> 태그 제거
+            summary_content = re.sub(r'</?summary>', '', summary_content).strip()
+            
+            st.markdown(summary_content)
 
         elif url:
             response = requests.get(url)
@@ -125,21 +107,16 @@ if st.button("요약하기"):
                 text = response.text
                 
                 # Anthropic API를 사용하여 요약을 수행합니다.
-            summary = summarize_with_anthropic(api_key, text)
-            
-            # 요약 결과 처리 및 출력
-            if summary.startswith("TextBlock(text='"):
-                # TextBlock 형식에서 실제 내용만 추출
-                summary_content = re.search(r"text='(.*?)'", summary, re.DOTALL).group(1)
-                # 이스케이프된 줄바꿈 문자를 실제 줄바꿈으로 변환
+                summary = summarize_with_anthropic(api_key, text)
+                
+                # 요약 결과 처리 및 출력 (PDF와 동일한 처리)
+                summary_content = summary
+                if summary.startswith("TextBlock(text='"):
+                    summary_content = re.search(r"text='(.*?)'", summary, re.DOTALL).group(1)
                 summary_content = summary_content.replace('\\n', '\n')
-                # <summary> 태그 제거
                 summary_content = re.sub(r'</?summary>', '', summary_content).strip()
                 
                 st.markdown(summary_content)
-            else:
-                st.markdown(summary)
-
             else:
                 st.write("URL을 가져올 수 없습니다. 다시 시도해주세요.")
         else:
