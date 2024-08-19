@@ -3,6 +3,7 @@ import requests
 from PyPDF2 import PdfReader
 import anthropic
 import re
+import io
 
 def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
     client = anthropic.Anthropic(api_key=api_key)
