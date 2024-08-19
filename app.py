@@ -101,10 +101,15 @@ if st.button("요약하기"):
             summary_content = re.sub(r'</?summary>', '', summary_content).strip()
             
             st.markdown(summary_content)
-
+        
         elif url:
             try:
-                response = requests.get(url, timeout=10)  # 10초 타임아웃 설정
+                # User-Agent 헤더 추가 및 세션 사용
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+                session = requests.Session()
+                response = session.get(url, headers=headers, timeout=10)
                 response.raise_for_status()  # HTTP 오류 발생 시 예외 발생
                 
                 st.write(f"Status Code: {response.status_code}")
