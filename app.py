@@ -4,7 +4,7 @@ from PyPDF2 import PdfReader
 import anthropic
 import re
 
-def summarize_with_anthropic(api_key, text, model="claude-3-sonnet-20240320"):
+def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
     client = anthropic.Anthropic(api_key=api_key)
     
     try:
@@ -61,10 +61,12 @@ if api_key:
     client = anthropic.Anthropic(api_key=api_key)
     try:
         # API 키 유효성을 간단히 확인하는 요청
-        response = client.completions.create(
-            model="claude-2.1",
-            max_tokens_to_sample=10,
-            prompt="Hello, World!",
+        response = client.messages.create(
+            model="claude-3-5-sonnet-20240620",
+            max_tokens=10,
+            messages=[
+                {"role": "user", "content": "Hello, World!"}
+            ]
         )
         if response:
             st.success("API 키가 유효합니다.")
@@ -73,7 +75,6 @@ if api_key:
     except Exception as e:
         st.error(f"API 키 검증 중 오류가 발생했습니다: {str(e)}")
         api_key = None
-
 # 파일 업로드 섹션
 uploaded_file = st.file_uploader("PDF 파일을 업로드하세요", type=["pdf"])
 
