@@ -102,6 +102,7 @@ if st.button("요약하기"):
             
             st.markdown(summary_content)
         
+
         elif url:
             try:
                 # User-Agent 헤더 추가 및 세션 사용
@@ -111,33 +112,45 @@ if st.button("요약하기"):
                 session = requests.Session()
                 response = session.get(url, headers=headers, timeout=10)
                 response.raise_for_status()  # HTTP 오류 발생 시 예외 발생
-                
+
                 st.write(f"Status Code: {response.status_code}")
                 st.write(f"Content Type: {response.headers.get('Content-Type')}")
-                
+
                 if response.status_code == 200:
-                    text = response.text
-                    
+                    if 'application/pdf' in response.headers.get('Content-Type', ''):
+                        # PDF 파일 처리
+                        pdf_file = io.BytesIO(response.content)
+                        pdf_reader = PdfReader(pdf_file)
+                        text = ""
+                        for page in pdf_reader.pages:
+                            text += page.extract_text()
+                    else:
+                        # 일반 텍스트 처리
+                        text = response.text
+
+                    # 텍스트 길이 제한 (예: 최대 100,000자)
+                    max_length = 100000
+                    if len(text) > max_length:
+                        text = text[:max_length]
+                        st.warning(f"텍스트가 너무 길어 처음 {max_length}자만 사용합니다.")
+
                     # 텍스트 내용 일부 출력 (디버깅용)
                     st.write("Text Preview:")
                     st.write(text[:500] + "...")  # 처음 500자만 출력
-                    
+
                     # Anthropic API를 사용하여 요약을 수행합니다.
                     summary = summarize_with_anthropic(api_key, text)
-                    
+
                     # 요약 결과 처리 및 출력
                     summary_content = summary
                     # <summary> 태그 제거
                     summary_content = re.sub(r'</?summary>', '', summary_content).strip()
-                    
+
                     st.markdown(summary_content)
                 else:
                     st.error(f"URL에서 데이터를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
+            
             except requests.exceptions.RequestException as e:
-                st.error(f"URL 요청 중 오류 발생: {str(e)}")
-            except Exception as e:
-                st.error(f"예상치 못한 오류 발생: {str(e)}")
-        else:
-            st.write("파일을 업로드하거나 URL을 입력해주세요.")
-    else:
-        st.write("API Key를 입력해주세요.")
+                    st.error(f"URL 요청 중 오류 발생: {str(e)}")
+                except Exception as e:
+                    st.error(f"예상치 못한 오류 발생: {str(e)}")
