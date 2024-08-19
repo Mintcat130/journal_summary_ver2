@@ -102,10 +102,22 @@ if st.button("요약하기"):
             for page in pdf_reader.pages:
                 text += page.extract_text()
             
-            # Anthropic API를 사용하여 요약을 수행합니다.
+           # Anthropic API를 사용하여 요약을 수행합니다.
             summary = summarize_with_anthropic(api_key, text)
-            st.write("요약 결과:")
-            st.write(summary)
+            
+            # 요약 결과 처리 및 출력
+            if summary.startswith("TextBlock(text='"):
+                # TextBlock 형식에서 실제 내용만 추출
+                summary_content = re.search(r"text='(.*?)'", summary, re.DOTALL).group(1)
+                # 이스케이프된 줄바꿈 문자를 실제 줄바꿈으로 변환
+                summary_content = summary_content.replace('\\n', '\n')
+                # <summary> 태그 제거
+                summary_content = re.sub(r'</?summary>', '', summary_content).strip()
+                
+                st.markdown(summary_content)
+            else:
+                st.markdown(summary)
+
 
         elif url:
             response = requests.get(url)
@@ -113,9 +125,21 @@ if st.button("요약하기"):
                 text = response.text
                 
                 # Anthropic API를 사용하여 요약을 수행합니다.
-                summary = summarize_with_anthropic(api_key, text)
-                st.write("요약 결과:")
-                st.write(summary)
+            summary = summarize_with_anthropic(api_key, text)
+            
+            # 요약 결과 처리 및 출력
+            if summary.startswith("TextBlock(text='"):
+                # TextBlock 형식에서 실제 내용만 추출
+                summary_content = re.search(r"text='(.*?)'", summary, re.DOTALL).group(1)
+                # 이스케이프된 줄바꿈 문자를 실제 줄바꿈으로 변환
+                summary_content = summary_content.replace('\\n', '\n')
+                # <summary> 태그 제거
+                summary_content = re.sub(r'</?summary>', '', summary_content).strip()
+                
+                st.markdown(summary_content)
+            else:
+                st.markdown(summary)
+
             else:
                 st.write("URL을 가져올 수 없습니다. 다시 시도해주세요.")
         else:
