@@ -4,11 +4,11 @@ from PyPDF2 import PdfReader
 import anthropic
 import re
 
-def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
+def summarize_with_anthropic(api_key, text, model="claude-3-sonnet-20240620"):
     client = anthropic.Anthropic(api_key=api_key)
     
     try:
-        message = client.messages.create(
+        response = client.messages.create(
             model=model,
             max_tokens=3000,
             temperature=0.7,
@@ -45,8 +45,8 @@ Text to summarize:
                 }
             ]
         )
-        return message.content
-    except anthropic.APIError as e:
+        return response.content[0].text
+    except Exception as e:
         st.error(f"API 오류: {str(e)}")
         return "Error: Failed to summarize the text."
 
@@ -60,9 +60,8 @@ api_key = st.text_input("Anthropic API Key를 입력하세요", type="password")
 if api_key:
     client = anthropic.Anthropic(api_key=api_key)
     try:
-        # API 키 유효성을 간단히 확인하는 요청
         response = client.messages.create(
-            model="claude-3-5-sonnet-20240620",
+            model="claude-3-sonnet-20240620",
             max_tokens=10,
             messages=[
                 {"role": "user", "content": "Hello, World!"}
@@ -75,11 +74,13 @@ if api_key:
     except Exception as e:
         st.error(f"API 키 검증 중 오류가 발생했습니다: {str(e)}")
         api_key = None
+
 # 파일 업로드 섹션
 uploaded_file = st.file_uploader("PDF 파일을 업로드하세요", type=["pdf"])
 
 # URL 입력 섹션
 url = st.text_input("논문 URL을 입력하세요")
+
 
 # 요약하기 버튼 추가
 if st.button("요약하기"):
@@ -96,11 +97,6 @@ if st.button("요약하기"):
             
             # 요약 결과 처리 및 출력
             summary_content = summary
-            if summary.startswith("TextBlock(text='"):
-                # TextBlock 형식에서 실제 내용만 추출
-                summary_content = re.search(r"text='(.*?)'", summary, re.DOTALL).group(1)
-            # 이스케이프된 줄바꿈 문자를 실제 줄바꿈으로 변환
-            summary_content = summary_content.replace('\\n', '\n')
             # <summary> 태그 제거
             summary_content = re.sub(r'</?summary>', '', summary_content).strip()
             
@@ -114,11 +110,9 @@ if st.button("요약하기"):
                 # Anthropic API를 사용하여 요약을 수행합니다.
                 summary = summarize_with_anthropic(api_key, text)
                 
-                # 요약 결과 처리 및 출력 (PDF와 동일한 처리)
+                # 요약 결과 처리 및 출력
                 summary_content = summary
-                if summary.startswith("TextBlock(text='"):
-                    summary_content = re.search(r"text='(.*?)'", summary, re.DOTALL).group(1)
-                summary_content = summary_content.replace('\\n', '\n')
+                # <summary> 태그 제거
                 summary_content = re.sub(r'</?summary>', '', summary_content).strip()
                 
                 st.markdown(summary_content)
