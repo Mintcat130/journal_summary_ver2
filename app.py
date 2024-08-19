@@ -50,13 +50,8 @@ Text to summarize:
         st.error(f"API 오류: {str(e)}")
         return "Error: Failed to summarize the text."
 
-# 페이지 설정
-st.set_page_config(
-    page_title="📝병리논문요약",
-    page_icon="📝",
-)
-# UI 제목
-st.title("병리 논문 요약하기📝_ver2 (HJY)")
+# Streamlit 앱 시작
+st.title("논문 요약 웹앱")
 
 # API Key 입력 섹션
 api_key = st.text_input("Anthropic API Key를 입력하세요", type="password")
@@ -108,22 +103,34 @@ if st.button("요약하기"):
             st.markdown(summary_content)
 
         elif url:
-            response = requests.get(url)
-            if response.status_code == 200:
-                text = response.text
-                
-                # Anthropic API를 사용하여 요약을 수행합니다.
-                summary = summarize_with_anthropic(api_key, text)
-                
-                # 요약 결과 처리 및 출력
-                summary_content = summary
-                # <summary> 태그 제거
-                summary_content = re.sub(r'</?summary>', '', summary_content).strip()
-                
-                st.markdown(summary_content)
-            else:
-                st.write("URL을 가져올 수 없습니다. 다시 시도해주세요.")
+    try:
+        response = requests.get(url, timeout=10)  # 10초 타임아웃 설정
+        response.raise_for_status()  # HTTP 오류 발생 시 예외 발생
+        
+        st.write(f"Status Code: {response.status_code}")
+        st.write(f"Content Type: {response.headers.get('Content-Type')}")
+        
+        if response.status_code == 200:
+            text = response.text
+            
+            # 텍스트 내용 일부 출력 (디버깅용)
+            st.write("Text Preview:")
+            st.write(text[:500] + "...")  # 처음 500자만 출력
+            
+            # Anthropic API를 사용하여 요약을 수행합니다.
+            summary = summarize_with_anthropic(api_key, text)
+            
+            # 요약 결과 처리 및 출력
+            summary_content = summary
+            # <summary> 태그 제거
+            summary_content = re.sub(r'</?summary>', '', summary_content).strip()
+            
+            st.markdown(summary_content)
         else:
-            st.write("파일을 업로드하거나 URL을 입력해주세요.")
-    else:
-        st.write("API Key를 입력해주세요.")
+            st.error(f"URL에서 데이터를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        st.error(f"URL 요청 중 오류 발생: {str(e)}")
+    except Exception as e:
+        st.error(f"예상치 못한 오류 발생: {str(e)}")
+else:
+    st.write("파일을 업로드하거나 URL을 입력해주세요.")
