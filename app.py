@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+from PyPDF2 import PdfReader
 
 # Anthropic API를 호출하여 요약을 수행하는 함수
 def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
@@ -39,7 +40,7 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
     payload = {
         "model": model,
         "prompt": prompt,
-        "max_tokens_to_sample": 3000,  # 적절한 최대 토큰 수 설정
+        "max_tokens_to_sample": 3000,
         "temperature": 0.7
     }
     
@@ -49,8 +50,10 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
         result = response.json()
         return result.get("completion", "").strip()
     else:
+        st.write(f"Error: {response.status_code} - {response.text}")
         return "Error: Failed to summarize the text."
 
+# Streamlit 앱 시작
 st.title("논문 요약 웹앱")
 
 # API Key 입력 섹션
@@ -58,30 +61,37 @@ api_key = st.text_input("Anthropic API Key를 입력하세요", type="password")
 
 # 파일 업로드 섹션
 uploaded_file = st.file_uploader("PDF 파일을 업로드하세요", type=["pdf"])
-if uploaded_file is not None and api_key:
-    from PyPDF2 import PdfReader
-
-    # PDF 파일을 읽습니다.
-    pdf_reader = PdfReader(uploaded_file)
-    text = ""
-    for page in pdf_reader.pages:
-        text += page.extract_text()
-    
-    # Anthropic API를 사용하여 요약을 수행합니다.
-    summary = summarize_with_anthropic(api_key, text)
-    st.write("요약 결과:")
-    st.write(summary)
 
 # URL 입력 섹션
 url = st.text_input("논문 URL을 입력하세요")
-if url and api_key:
-    response = requests.get(url)
-    if response.status_code == 200:
-        text = response.text
-        
-        # Anthropic API를 사용하여 요약을 수행합니다.
-        summary = summarize_with_anthropic(api_key, text)
-        st.write("요약 결과:")
-        st.write(summary)
+
+# 요약하기 버튼 추가
+if st.button("요약하기"):
+    if api_key:
+        if uploaded_file is not None:
+            # PDF 파일에서 텍스트 추출
+            pdf_reader = PdfReader(uploaded_file)
+            text = ""
+            for page in pdf_reader.pages:
+                text += page.extract_text()
+            
+            # Anthropic API를 사용하여 요약을 수행합니다.
+            summary = summarize_with_anthropic(api_key, text)
+            st.write("요약 결과:")
+            st.write(summary)
+
+        elif url:
+            response = requests.get(url)
+            if response.status_code == 200:
+                text = response.text
+                
+                # Anthropic API를 사용하여 요약을 수행합니다.
+                summary = summarize_with_anthropic(api_key, text)
+                st.write("요약 결과:")
+                st.write(summary)
+            else:
+                st.write("URL을 가져올 수 없습니다. 다시 시도해주세요.")
+        else:
+            st.write("파일을 업로드하거나 URL을 입력해주세요.")
     else:
-        st.write("URL을 가져올 수 없습니다. 다시 시도해주세요.")
+        st.write("API Key를 입력해주세요.")
