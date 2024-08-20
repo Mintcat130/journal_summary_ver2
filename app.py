@@ -53,8 +53,15 @@ Text to summarize:
         st.error(f"API 오류: {str(e)}")
         return "Error: Failed to summarize the text."
 
-# Streamlit 앱 시작
-st.title("논문 요약 웹앱")
+# 페이지 설정
+st.set_page_config(
+    page_title="📝병리논문요약",
+    page_icon="📝",
+)
+
+# UI 제목
+st.title("병리 논문 요약하기📝_ver2 (HJY)")
+
 
 # API Key 입력 섹션
 api_key = st.text_input("Anthropic API Key를 입력하세요", type="password")
