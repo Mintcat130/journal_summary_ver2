@@ -20,14 +20,15 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
                     "content": f"""Follow these instructions to create a concise and informative summary:
 
 1. Use Korean for the summary, but keep the paper title, medical terms, and proper nouns in their original English form.
-    Examples of medical terms: "colon adenocarcinoma", "eosinophils", "neuroblastoma", "leiomyoma"
+    Examples of medical terms: "colon adenocarcinoma", "eosinophils", "neuroblastoma", "leiomyoma", "mesangium", "intrinsic cells"
 2. Write in a concise style, using endings like '~함', '~임' for brevity.
 3. Use markdown format for better readability. Do not write in paragraph form.
 4. Structure your summary as follows:
    a. Title:
       - Format: ## [Original English Title] (published year)
    b. Keywords:
-      - List approximately 5 key terms from the paper
+      - List approximately 5 key terms from the paper. 한눈에 알아보기 쉽게 각 단어가 시각적으로 잘 구분될 수 있게 출력하기
+          (examples: "colon adenocarcinoma", "object detection", "neuropathology")
    c. Overall Summary:
       - Provide a 3-line summary of the entire paper
    d. Detailed Section Summaries:
@@ -36,7 +37,6 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
         - Method
         - Result
         - Discussion
-    e. 5 kewords (examples: "colon adenocarcinoma", "object detection", "neuropathology")
 5. Do not summarize anything after the 'References' section.
 6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
 
