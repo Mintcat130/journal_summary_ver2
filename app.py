@@ -196,24 +196,21 @@ elif url:
 
             # 요약 중 메시지 표시
             with st.spinner("논문 요약 중입니다..."):
-                try:
-                    # Anthropic API를 사용하여 요약을 수행합니다.
-                    summary = summarize_with_anthropic(api_key, text)
-                    
-                    # 요약 결과 처리 및 출력
-                    summary_content = summary
-                    # <summary> 태그 제거
-                    summary_content = re.sub(r'</?summary>', '', summary_content).strip()
-                    # "Here is a summary of the research paper in Korean:" 텍스트 제거
-                    summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', summary_content, flags=re.IGNORECASE)
-                    
-                    # 요약 결과를 세션 상태에 저장
-                    st.session_state.summary_content = summary_content
-                    
-                    st.markdown(st.session_state.summary_content)
-                except Exception as e:
-                    st.error(f"요약 중 오류 발생: {str(e)}")
-            
+                # Anthropic API를 사용하여 요약을 수행합니다.
+                summary = summarize_with_anthropic(api_key, text)
+                
+                # 요약 결과 처리 및 출력
+                summary_content = summary
+                # <summary> 태그 제거
+                summary_content = re.sub(r'</?summary>', '', summary_content).strip()
+                # "Here is a summary of the research paper in Korean:" 텍스트 제거
+                summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', summary_content, flags=re.IGNORECASE)
+                
+                # 요약 결과를 세션 상태에 저장
+                st.session_state.summary_content = summary_content
+                
+                st.markdown(st.session_state.summary_content)
+
             if 'summary_content' in st.session_state:
                 col1, col2, col3 = st.columns(3)
                 
@@ -230,7 +227,7 @@ elif url:
                         mime="text/plain"
                     ):
                         st.success("TXT 파일이 다운로드되었습니다.")
-
+                
                 with col3:
                     docx_io = io.BytesIO()
                     doc = Document()
@@ -246,18 +243,16 @@ elif url:
                     ):
                         st.success("DOCX 파일이 다운로드되었습니다.")
 
-            else:
-                st.error(f"URL에서 데이터를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
+        else:
+            st.error(f"URL에서 데이터를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
     
-        except requests.exceptions.RequestException as e:
-            st.error(f"URL 요청 중 오류 발생: {str(e)}")
-        except Exception as e:
-            st.error(f"예상치 못한 오류 발생: {str(e)}")
+    except requests.exceptions.RequestException as e:
+        st.error(f"URL 요청 중 오류 발생: {str(e)}")
+    except Exception as e:
+        st.error(f"예상치 못한 오류 발생: {str(e)}")
 
-    else:
-        st.warning("PDF 파일을 업로드하거나 URL을 입력해주세요.")
 else:
-    st.error("유효한 API 키를 입력해주세요.")
+    st.warning("PDF 파일을 업로드하거나 URL을 입력해주세요.")
 
 # 세션 상태에 저장된 요약 결과가 있으면 항상 표시
 if 'summary_content' in st.session_state:
