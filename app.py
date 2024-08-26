@@ -7,6 +7,10 @@ import re
 from docx import Document
 import io
 
+# 여기에 새 코드를 추가합니다
+if 'original_text' not in st.session_state:
+    st.session_state.original_text = ""
+
 def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
     client = anthropic.Anthropic(api_key=api_key)
     
