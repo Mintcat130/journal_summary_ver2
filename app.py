@@ -14,7 +14,6 @@ if 'original_text' not in st.session_state:
 def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620", system_prompt="You are an AI assistant tasked with summarizing a research paper in Korean. You have expertise in pathology, medicine, and the application of AI in pathology. Your audience is also a pathologist."):
     client = anthropic.Anthropic(api_key=api_key)
 
-    
     prompt = f"""Follow these instructions to create a concise and informative summary:
 
 1. Use Korean for the summary, but keep the paper title, medical terms, and proper nouns in their original English form.
@@ -42,11 +41,11 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620", 
 Remember to use markdown formatting for headers and list items.
 요약 내용 말고 다른 말은 아무것도 적지 말것
 
-    Text to summarize:
+Text to summarize:
 
-    {text}"""
+{text}"""
 
-   try:
+    try:
         response = client.messages.create(
             model=model,
             max_tokens=3000,
@@ -55,7 +54,7 @@ Remember to use markdown formatting for headers and list items.
             messages=[
                 {
                     "role": "user",
-                    "content": text
+                    "content": prompt
                 }
             ]
         )
