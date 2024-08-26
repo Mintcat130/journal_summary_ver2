@@ -246,18 +246,18 @@ elif url:
                     ):
                         st.success("DOCX 파일이 다운로드되었습니다.")
 
-                else:
-                    st.error(f"URL에서 데이터를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
+            else:
+                st.error(f"URL에서 데이터를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
     
-            except requests.exceptions.RequestException as e:
-                st.error(f"URL 요청 중 오류 발생: {str(e)}")
-            except Exception as e:
-                st.error(f"예상치 못한 오류 발생: {str(e)}")
+        except requests.exceptions.RequestException as e:
+            st.error(f"URL 요청 중 오류 발생: {str(e)}")
+        except Exception as e:
+            st.error(f"예상치 못한 오류 발생: {str(e)}")
 
-        else:
-            st.warning("PDF 파일을 업로드하거나 URL을 입력해주세요.")
     else:
-        st.error("유효한 API 키를 입력해주세요.")
+        st.warning("PDF 파일을 업로드하거나 URL을 입력해주세요.")
+else:
+    st.error("유효한 API 키를 입력해주세요.")
 
 # 세션 상태에 저장된 요약 결과가 있으면 항상 표시
 if 'summary_content' in st.session_state:
