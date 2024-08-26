@@ -150,15 +150,16 @@ if st.button("요약하기"):
                 text = ""
         
         if text:
-            # 여기에 원본 텍스트를 세션 상태에 저장
+            # 원본 텍스트를 세션 상태에 저장
             st.session_state.original_text = text
             
             with st.spinner("논문 요약 중입니다..."):
                 try:
-                    summary = summarize_with_anthropic(api_key, text)
+                    summary = summarize_with_anthropic(api_key, st.session_state.original_text)
                     summary_content = re.sub(r'</?summary>', '', summary).strip()
                     summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', summary_content, flags=re.IGNORECASE)
                     st.session_state.summary_content = summary_content
+                    st.markdown(st.session_state.summary_content)
                 except Exception as e:
                     st.error(f"요약 중 오류 발생: {str(e)}")
         else:
@@ -167,7 +168,7 @@ if st.button("요약하기"):
         st.error("유효한 API 키를 입력해주세요.")
 
 # 요약 결과 표시 및 버튼 생성
-if 'summary_content' in st.session_state:
+if 'summary_content' in st.session_state and 'original_text' in st.session_state:
     st.markdown(st.session_state.summary_content)
 
     col1, col2 = st.columns(2)
