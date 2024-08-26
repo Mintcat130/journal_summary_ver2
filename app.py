@@ -94,38 +94,6 @@ uploaded_file = st.file_uploader("PDF 파일을 업로드하세요", type=["pdf"
 url = st.text_input("논문 URL을 입력하세요")
 
 
-# 요약하기 버튼을 누를 때 실행되는 부분
-if st.button("요약하기"):
-    if api_key:
-        if uploaded_file is not None:
-            # PDF 파일에서 텍스트 추출
-            pdf_reader = PdfReader(uploaded_file)
-            text = ""
-            for page in pdf_reader.pages:
-                text += page.extract_text()
-            
-            # 요약 중 메시지 표시
-            with st.spinner("논문 요약 중입니다..."):
-                try:
-                    # Anthropic API를 사용하여 요약을 수행합니다.
-                    summary = summarize_with_anthropic(api_key, text)
-                    
-                    # 요약 결과 처리
-                    summary_content = summary
-                    # <summary> 태그 제거
-                    summary_content = re.sub(r'</?summary>', '', summary_content).strip()
-                    # "Here is a summary of the research paper in Korean:" 텍스트 제거
-                    summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', summary_content, flags=re.IGNORECASE)
-                    
-                    # 요약 결과를 세션 상태에 저장
-                    st.session_state.summary_content = summary_content
-                except Exception as e:
-                    st.error(f"요약 중 오류 발생: {str(e)}")
-
-        else:
-            st.warning("PDF 파일을 업로드하거나 URL을 입력해주세요.")
-    else:
-        st.error("유효한 API 키를 입력해주세요.")
 
 # 요약하기 버튼을 누를 때 실행되는 부분
 if st.button("요약하기"):
