@@ -34,7 +34,8 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
 5. Do not summarize anything after the 'References' section.
 6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
 
-Present your summary within <summary> tags. Remember to use markdown formatting for headers and list items.
+Remember to use markdown formatting for headers and list items.
+요약 내용 말고 다른 말은 아무것도 적지 말것
 
     Text to summarize:
 
@@ -121,7 +122,7 @@ if st.button("요약하기"):
                 except Exception as e:
                     st.error(f"요약 중 오류 발생: {str(e)}")
             
-            st.markdown(summary_content)
+            #st.markdown(summary_content)
             
             if summary_content:
                 if st.button("결과 복사"):
@@ -198,7 +199,7 @@ if st.button("요약하기"):
                     # <summary> 태그 제거
                     summary_content = re.sub(r'</?summary>', '', summary_content).strip()
 
-                    st.markdown(summary_content)
+                   # st.markdown(summary_content)
                 else:
                     st.error(f"URL에서 데이터를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
             
