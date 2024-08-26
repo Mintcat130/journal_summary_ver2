@@ -1,26 +1,19 @@
 import streamlit as st
 import requests
 from PyPDF2 import PdfReader
-import anthropic
+from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
 import re
+from docx import Document
 import io
+import pyperclip
 
 def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
     client = anthropic.Anthropic(api_key=api_key)
     
-    try:
-        response = client.messages.create(
-            model=model,
-            max_tokens=3000,
-            temperature=0.3,
-            system="You are an AI assistant tasked with summarizing a research paper in Korean. You have expertise in pathology, medicine, and the application of AI in pathology. Your audience is also a pathologist.",
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"""Follow these instructions to create a concise and informative summary:
+    prompt = f"""Follow these instructions to create a concise and informative summary:
 
 1. Use Korean for the summary, but keep the paper title, medical terms, and proper nouns in their original English form.
-    Examples of medical terms: "colon adenocarcinoma", "eosinophils", "neuroblastoma", "leiomyoma", "mesangium", "intrinsic cells", "fibroadenoma", "phyllodes tumor"
+    Examples of medical terms: "colon adenocarcinoma", "eosinophils", "neuroblastoma", "leiomyoma", "mesangium", "intrinsic cells"
 2. Write in a concise style, using endings like '~함', '~임' for brevity.
 3. Use markdown format for better readability. Do not write in paragraph form.
 4. Structure your summary as follows:
@@ -37,7 +30,6 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
         - Method
         - Result
         - Discussion
-        - Conclusion
 5. Do not summarize anything after the 'References' section.
 6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
 
@@ -46,10 +38,27 @@ Present your summary within <summary> tags. Remember to use markdown formatting 
 Text to summarize:
 
 {text}"""
-                }
-            ]
-        )
-        return response.content[0].text
+
+    try:
+        with st.empty():
+            stream = client.messages.stream(
+                model=model,
+                max_tokens=3000,
+                temperature=0.7,
+                system="You are an AI assistant tasked with summarizing a research paper in Korean. You have expertise in pathology, medicine, and the application of AI in pathology. Your audience is also a pathologist.",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
+            )
+            response = ""
+            for chunk in stream:
+                if chunk.type == "content_block_delta":
+                    response += chunk.delta.text
+                    st.markdown(response)
+        return response
     except Exception as e:
         st.error(f"API 오류: {str(e)}")
         return "Error: Failed to summarize the text."
@@ -112,7 +121,38 @@ if st.button("요약하기"):
             summary_content = re.sub(r'</?summary>', '', summary_content).strip()
             
             st.markdown(summary_content)
-        
+            
+            if summary_content:
+                if st.button("결과 복사"):
+                    pyperclip.copy(summary_content)
+                    st.success("결과가 클립보드에 복사되었습니다.")
+
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    if st.button("TXT 파일로 저장"):
+                        txt_io = io.StringIO()
+                        txt_io.write(summary_content)
+                        st.download_button(
+                            label="Download TXT",
+                            data=txt_io.getvalue(),
+                            file_name="summary.txt",
+                            mime="text/plain"
+                        )
+                
+                with col2:
+                    if st.button("DOCX 파일로 저장"):
+                        doc = Document()
+                        doc.add_paragraph(summary_content)
+                        docx_io = io.BytesIO()
+                        doc.save(docx_io)
+                        docx_io.seek(0)
+                        st.download_button(
+                            label="Download DOCX",
+                            data=docx_io,
+                            file_name="summary.docx",
+                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        )
 
         elif url:
             try:
