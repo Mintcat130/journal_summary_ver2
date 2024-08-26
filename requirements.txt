@@ -3,3 +3,5 @@ PyPDF2
 requests
 anthropic==0.34.0
 transformers
+python-docx
+pyperclip
