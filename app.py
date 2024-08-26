@@ -104,7 +104,7 @@ uploaded_file = st.file_uploader("PDF 파일을 업로드하세요", type=["pdf"
 url = st.text_input("논문 URL을 입력하세요")
 
 
-# 요약하기 버튼 추가
+# 요약하기 버튼을 누를 때 실행되는 부분
 if st.button("요약하기"):
     if api_key:
         if uploaded_file is not None:
@@ -207,3 +207,7 @@ if st.button("요약하기"):
                     st.error(f"URL 요청 중 오류 발생: {str(e)}")
             except Exception as e:
                     st.error(f"예상치 못한 오류 발생: {str(e)}")
+        else:
+            st.warning("PDF 파일을 업로드하거나 URL을 입력해주세요.")
+    else:
+        st.error("유효한 API 키를 입력해주세요.")
