@@ -257,14 +257,17 @@ if 'summary_content' in st.session_state and 'original_text' in st.session_state
    c. Overall Summary:
       - Provide a 5-line summary of the entire paper
    d. Detailed Section Summaries:
-      - Summarize each of the following sections in about 10 lines each. not less than 5 lines:
-        - Introduction
-        - Method
-        - Result
-        - Discussion
-        - Conclusion
+      - IMPORTANT: Summarize each of the following sections in EXACTLY 10 lines. No less, no more.
+      - Use bullet points for each line to ensure exactly 10 lines per section.
+      - Sections to summarize:
+        • Introduction
+        • Method
+        • Result
+        • Discussion
+        • Conclusion
 5. Do not summarize anything after the 'References' section.
 6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
+7. REMINDER: Each section summary MUST be EXACTLY 10 lines long. This is crucial for the desired output format.
 
 Text to summarize:
 
