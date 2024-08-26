@@ -36,34 +36,26 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
 
 Present your summary within <summary> tags. Remember to use markdown formatting for headers and list items.
 
-Text to summarize:
+    Text to summarize:
 
-{text}"""
+    {text}"""
 
     try:
-        with st.empty():
-            stream = client.messages.create(
-                model=model,
-                max_tokens=3000,
-                temperature=0.3,
-                system="You are an AI assistant tasked with summarizing a research paper in Korean. You have expertise in pathology, medicine, and the application of AI in pathology. Your audience is also a pathologist.",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                stream=True
-            )
-            response = ""
-            for chunk in stream:
-                if chunk.type == "content_block":
-                    response += chunk.text
-                    st.markdown(response)
-        return response
+        response = client.messages.create(
+            model=model,
+            max_tokens=3000,
+            temperature=0.3,
+            system="You are an AI assistant tasked with summarizing a research paper in Korean. You have expertise in pathology, medicine, and the application of AI in pathology. Your audience is also a pathologist.",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        )
+        return response.content[0].text
     except Exception as e:
-        st.error(f"API 오류: {str(e)}")
-        return "Error: Failed to summarize the text."
+        raise Exception(f"API 오류: {str(e)}")
 
 # 페이지 설정
 st.set_page_config(
@@ -114,7 +106,7 @@ if st.button("요약하기"):
             for page in pdf_reader.pages:
                 text += page.extract_text()
             
-           # 요약 중 메시지 표시
+            # 요약 중 메시지 표시
             with st.spinner("논문 요약 중입니다..."):
                 try:
                     # Anthropic API를 사용하여 요약을 수행합니다.
