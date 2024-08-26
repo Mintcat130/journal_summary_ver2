@@ -123,8 +123,8 @@ if st.button("요약하기"):
                     # 요약 결과를 세션 상태에 저장
                     st.session_state.summary_content = summary_content
 
-                #요약 결과 한번만 출력
-                st.markdown(st.session_state.summary_content)
+                    #요약 결과 한번만 출력
+                    st.markdown(st.session_state.summary_content)
                 except Exception as e:
                     st.error(f"요약 중 오류 발생: {str(e)}")
             
