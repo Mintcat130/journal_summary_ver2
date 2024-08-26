@@ -249,10 +249,10 @@ elif url:
         else:
             st.error(f"URL에서 데이터를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
     
-    except requests.exceptions.RequestException as e:
-        st.error(f"URL 요청 중 오류 발생: {str(e)}")
-    except Exception as e:
-        st.error(f"예상치 못한 오류 발생: {str(e)}")
+            except requests.exceptions.RequestException as e:
+                st.error(f"URL 요청 중 오류 발생: {str(e)}")
+            except Exception as e:
+                st.error(f"예상치 못한 오류 발생: {str(e)}")
 
         else:
             st.warning("PDF 파일을 업로드하거나 URL을 입력해주세요.")
