@@ -146,6 +146,9 @@ if st.button("요약하기"):
                 text = ""
         
         if text:
+            # 여기에 원본 텍스트를 세션 상태에 저장
+            st.session_state.original_text = text
+            
             with st.spinner("논문 요약 중입니다..."):
                 try:
                     summary = summarize_with_anthropic(api_key, text)
@@ -190,4 +193,55 @@ if 'summary_content' in st.session_state:
             key="docx_download"
         ):
             st.success("DOCX 파일이 다운로드되었습니다.")
+
+    # 새로운 버튼 추가
+    if st.button("한번 더 다르게 요약해보기"):
+        with st.spinner("다시 요약 중입니다..."):
+            try:
+                new_summary = summarize_with_anthropic(api_key, st.session_state.original_text)
+                new_summary_content = re.sub(r'</?summary>', '', new_summary).strip()
+                new_summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', new_summary_content, flags=re.IGNORECASE)
+                st.markdown("## 새로운 요약")
+                st.markdown(new_summary_content)
+            except Exception as e:
+                st.error(f"새로운 요약 중 오류 발생: {str(e)}")
+
+    if st.button("더 길고 디테일하게 요약해보기"):
+        with st.spinner("상세 요약 중입니다..."):
+            try:
+                detailed_prompt = f"""Follow these instructions to create a more detailed summary:
+
+1. Use Korean for the summary, but keep the paper title, medical terms, and proper nouns in their original English form.
+2. Write in a concise style, using endings like '~함', '~임' for brevity.
+3. Use markdown format for better readability. Do not write in paragraph form.
+4. Structure your summary as follows:
+   a. Title:
+      - Format: ## [Original English Title] (published year)
+   b. Keywords:
+      - List approximately 5 key terms from the paper.
+   c. Overall Summary:
+      - Provide a 5-line summary of the entire paper
+   d. Detailed Section Summaries:
+      - Summarize each of the following sections in about 10 lines each:
+        - Introduction
+        - Method
+        - Result
+        - Discussion
+5. Do not summarize anything after the 'References' section.
+6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
+
+Text to summarize:
+
+{st.session_state.original_text}"""
+
+                detailed_summary = summarize_with_anthropic(api_key, detailed_prompt)
+                detailed_summary_content = re.sub(r'</?summary>', '', detailed_summary).strip()
+                detailed_summary_content = re.sub(r'^Here is a more detailed summary of the research paper in Korean:\s*', '', detailed_summary_content, flags=re.IGNORECASE)
+                st.markdown("## 상세 요약")
+                st.markdown(detailed_summary_content)
+            except Exception as e:
+                st.error(f"상세 요약 중 오류 발생: {str(e)}")
+
+else:
+    st.warning("먼저 논문을 요약해주세요.")
 
