@@ -34,7 +34,7 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
 6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
 
 Remember to use markdown formatting for headers and list items.
-요약 내용 말고 다른 말은 아무것도 적지 말것. 예시: '여기 요약본 입니다' 이런 말도 하지 말것.
+요약 내용 말고 다른 말은 아무것도 적지 말것
 
     Text to summarize:
 
@@ -97,6 +97,39 @@ url = st.text_input("논문 URL을 입력하세요")
 # 요약하기 버튼을 누를 때 실행되는 부분
 if st.button("요약하기"):
     if api_key:
+        if uploaded_file is not None:
+            # PDF 파일에서 텍스트 추출
+            pdf_reader = PdfReader(uploaded_file)
+            text = ""
+            for page in pdf_reader.pages:
+                text += page.extract_text()
+            
+            # 요약 중 메시지 표시
+            with st.spinner("논문 요약 중입니다..."):
+                try:
+                    # Anthropic API를 사용하여 요약을 수행합니다.
+                    summary = summarize_with_anthropic(api_key, text)
+                    
+                    # 요약 결과 처리
+                    summary_content = summary
+                    # <summary> 태그 제거
+                    summary_content = re.sub(r'</?summary>', '', summary_content).strip()
+                    # "Here is a summary of the research paper in Korean:" 텍스트 제거
+                    summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', summary_content, flags=re.IGNORECASE)
+                    
+                    # 요약 결과를 세션 상태에 저장
+                    st.session_state.summary_content = summary_content
+                except Exception as e:
+                    st.error(f"요약 중 오류 발생: {str(e)}")
+
+        else:
+            st.warning("PDF 파일을 업로드하거나 URL을 입력해주세요.")
+    else:
+        st.error("유효한 API 키를 입력해주세요.")
+
+# 요약하기 버튼을 누를 때 실행되는 부분
+if st.button("요약하기"):
+    if api_key:
         text = ""
         if uploaded_file is not None:
             # PDF 파일에서 텍스트 추출
@@ -105,10 +138,43 @@ if st.button("요약하기"):
                 text += page.extract_text()
         elif url:
             try:
-                # URL에서 텍스트 추출 (기존 코드 유지)
-                # ...
+                # User-Agent 헤더 추가 및 세션 사용
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+                session = requests.Session()
+                response = session.get(url, headers=headers, timeout=10)
+                response.raise_for_status()  # HTTP 오류 발생 시 예외 발생
+
+                st.write(f"Status Code: {response.status_code}")
+                st.write(f"Content Type: {response.headers.get('Content-Type')}")
+
+                if response.status_code == 200:
+                    if 'application/pdf' in response.headers.get('Content-Type', ''):
+                        # PDF 파일 처리
+                        pdf_file = io.BytesIO(response.content)
+                        pdf_reader = PdfReader(pdf_file)
+                        for page in pdf_reader.pages:
+                            text += page.extract_text()
+                    else:
+                        # 일반 텍스트 처리
+                        text = response.text
+
+                    # 텍스트 길이 제한 (예: 최대 100,000자)
+                    max_length = 100000
+                    if len(text) > max_length:
+                        text = text[:max_length]
+                        st.warning(f"텍스트가 너무 길어 처음 {max_length}자만 사용합니다.")
+
+                    # 텍스트 내용 일부 출력 (디버깅용)
+                    st.write("Text Preview:")
+                    st.write(text[:500] + "...")  # 처음 500자만 출력
+                else:
+                    st.error(f"URL에서 데이터를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
+            except requests.exceptions.RequestException as e:
+                st.error(f"URL 요청 중 오류 발생: {str(e)}")
             except Exception as e:
-                st.error(f"URL 처리 중 오류 발생: {str(e)}")
+                st.error(f"예상치 못한 오류 발생: {str(e)}")
                 text = ""
         
         if text:
@@ -124,7 +190,7 @@ if st.button("요약하기"):
             st.warning("PDF 파일을 업로드하거나 유효한 URL을 입력해주세요.")
     else:
         st.error("유효한 API 키를 입력해주세요.")
-        
+
 # 요약 결과 표시 및 버튼 생성
 if 'summary_content' in st.session_state:
     st.markdown(st.session_state.summary_content)
@@ -162,101 +228,3 @@ if 'summary_content' in st.session_state:
         ):
             st.success("DOCX 파일이 다운로드되었습니다.")
 
-elif url:
-    try:
-        # User-Agent 헤더 추가 및 세션 사용
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-        session = requests.Session()
-        response = session.get(url, headers=headers, timeout=10)
-        response.raise_for_status()  # HTTP 오류 발생 시 예외 발생
-
-        st.write(f"Status Code: {response.status_code}")
-        st.write(f"Content Type: {response.headers.get('Content-Type')}")
-
-        if response.status_code == 200:
-            if 'application/pdf' in response.headers.get('Content-Type', ''):
-                # PDF 파일 처리
-                pdf_file = io.BytesIO(response.content)
-                pdf_reader = PdfReader(pdf_file)
-                text = ""
-                for page in pdf_reader.pages:
-                    text += page.extract_text()
-            else:
-                # 일반 텍스트 처리
-                text = response.text
-
-            # 텍스트 길이 제한 (예: 최대 100,000자)
-            max_length = 100000
-            if len(text) > max_length:
-                text = text[:max_length]
-                st.warning(f"텍스트가 너무 길어 처음 {max_length}자만 사용합니다.")
-
-            # 텍스트 내용 일부 출력 (디버깅용)
-            st.write("Text Preview:")
-            st.write(text[:500] + "...")  # 처음 500자만 출력
-
-            # 요약 중 메시지 표시
-            with st.spinner("논문 요약 중입니다..."):
-                # Anthropic API를 사용하여 요약을 수행합니다.
-                summary = summarize_with_anthropic(api_key, text)
-                
-                # 요약 결과 처리 및 출력
-                summary_content = summary
-                # <summary> 태그 제거
-                summary_content = re.sub(r'</?summary>', '', summary_content).strip()
-                # "Here is a summary of the research paper in Korean:" 텍스트 제거
-                summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', summary_content, flags=re.IGNORECASE)
-                
-                # 요약 결과를 세션 상태에 저장
-                st.session_state.summary_content = summary_content
-                
-                st.markdown(st.session_state.summary_content)
-
-            if 'summary_content' in st.session_state:
-                col1, col2, col3 = st.columns(3)
-                
-                with col1:
-                    if st.button("결과 복사"):
-                        pyperclip.copy(st.session_state.summary_content)
-                        st.success("결과가 클립보드에 복사되었습니다.")
-                
-                with col2:
-                    if st.download_button(
-                        label="TXT 파일로 저장",
-                        data=st.session_state.summary_content,
-                        file_name="summary.txt",
-                        mime="text/plain"
-                    ):
-                        st.success("TXT 파일이 다운로드되었습니다.")
-                
-                with col3:
-                    docx_io = io.BytesIO()
-                    doc = Document()
-                    doc.add_paragraph(st.session_state.summary_content)
-                    doc.save(docx_io)
-                    docx_io.seek(0)
-                    
-                    if st.download_button(
-                        label="DOCX 파일로 저장",
-                        data=docx_io,
-                        file_name="summary.docx",
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    ):
-                        st.success("DOCX 파일이 다운로드되었습니다.")
-
-        else:
-            st.error(f"URL에서 데이터를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
-    
-    except requests.exceptions.RequestException as e:
-        st.error(f"URL 요청 중 오류 발생: {str(e)}")
-    except Exception as e:
-        st.error(f"예상치 못한 오류 발생: {str(e)}")
-
-else:
-    st.warning("PDF 파일을 업로드하거나 URL을 입력해주세요.")
-
-# 세션 상태에 저장된 요약 결과가 있으면 항상 표시
-if 'summary_content' in st.session_state:
-    st.markdown(st.session_state.summary_content)
