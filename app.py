@@ -13,6 +13,7 @@ if 'original_text' not in st.session_state:
 
 def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620", system_prompt="You are an AI assistant tasked with summarizing a research paper in Korean. You have expertise in pathology, medicine, and the application of AI in pathology. Your audience is also a pathologist."):
     client = anthropic.Anthropic(api_key=api_key)
+
     
     prompt = f"""Follow these instructions to create a concise and informative summary:
 
@@ -45,7 +46,7 @@ Remember to use markdown formatting for headers and list items.
 
     {text}"""
 
-    try:
+   try:
         response = client.messages.create(
             model=model,
             max_tokens=3000,
@@ -241,10 +242,10 @@ if 'summary_content' in st.session_state and 'original_text' in st.session_state
             except Exception as e:
                 st.error(f"새로운 요약 중 오류 발생: {str(e)}")
 
-    if st.button("더 길고 디테일하게 요약해보기"):
-        with st.spinner("상세 요약 중입니다..."):
-            try:
-                detailed_prompt = f"""Follow these instructions to create a more detailed summary:
+  if st.button("더 길고 디테일하게 요약해보기"):
+    with st.spinner("상세 요약 중입니다..."):
+        try:
+            detailed_prompt = f"""Follow these instructions to create a more detailed summary:
 
 1. Use Korean for the summary, but keep the paper title, medical terms, and proper nouns in their original English form.
 2. Write in a concise style, using endings like '~함', '~임' for brevity.
@@ -257,7 +258,7 @@ if 'summary_content' in st.session_state and 'original_text' in st.session_state
    c. Overall Summary:
       - Provide a 5-line summary of the entire paper
    d. Detailed Section Summaries:
-      - IMPORTANT: Summarize each of the following sections in about 10 lines.
+      - IMPORTANT: Summarize each of the following sections in about 10 lines. 
       - Use bullet points for each line per section.
       - Sections to summarize:
         • Introduction
@@ -267,48 +268,50 @@ if 'summary_content' in st.session_state and 'original_text' in st.session_state
         • Conclusion
 5. Do not summarize anything after the 'References' section.
 6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
-7. REMINDER: Each section summary MUST be more than 6 lines long. This is crucial for the desired output format.
+7. REMINDER: Each section summary MUST be more than 5 lines long. This is crucial for the desired output format.
 
 Text to summarize:
 
-            {st.session_state.original_text}"""
+{st.session_state.original_text}"""
 
-            detailed_summary = summarize_with_anthropic(api_key, detailed_prompt, system_prompt="You are an AI assistant tasked with creating detailed summaries of research papers in Korean. Your summaries should be thorough and follow the given instructions precisely.")
+            detailed_system_prompt = "You are an AI assistant tasked with creating detailed summaries of research papers in Korean. Your summaries should be thorough and follow the given instructions precisely."
+            
+            detailed_summary = summarize_with_anthropic(api_key, detailed_prompt, system_prompt=detailed_system_prompt)
             detailed_summary_content = re.sub(r'</?summary>', '', detailed_summary).strip()
             detailed_summary_content = re.sub(r'^Here is a more detailed summary of the research paper in Korean:\s*', '', detailed_summary_content, flags=re.IGNORECASE)
             st.markdown("## 상세 요약")
             st.markdown(detailed_summary_content)
 
-                # 상세 요약 결과에 대한 파일 저장 버튼
-                col1, col2 = st.columns(2)
-                with col1:
-                    if st.download_button(
-                        label="상세 요약 TXT로 저장",
-                        data=detailed_summary_content,
-                        file_name="detailed_summary.txt",
-                        mime="text/plain",
-                        key="detailed_txt_download"
-                    ):
-                        st.success("상세 요약 TXT 파일이 다운로드되었습니다.")
+            # 상세 요약 결과에 대한 파일 저장 버튼
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.download_button(
+                    label="상세 요약 TXT로 저장",
+                    data=detailed_summary_content,
+                    file_name="detailed_summary.txt",
+                    mime="text/plain",
+                    key="detailed_txt_download"
+                ):
+                    st.success("상세 요약 TXT 파일이 다운로드되었습니다.")
 
-                with col2:
-                    docx_io = io.BytesIO()
-                    doc = Document()
-                    doc.add_paragraph(detailed_summary_content)
-                    doc.save(docx_io)
-                    docx_io.seek(0)
-                    
-                    if st.download_button(
-                        label="상세 요약 DOCX로 저장",
-                        data=docx_io,
-                        file_name="detailed_summary.docx",
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                        key="detailed_docx_download"
-                    ):
-                        st.success("상세 요약 DOCX 파일이 다운로드되었습니다.")
+            with col2:
+                docx_io = io.BytesIO()
+                doc = Document()
+                doc.add_paragraph(detailed_summary_content)
+                doc.save(docx_io)
+                docx_io.seek(0)
+                
+                if st.download_button(
+                    label="상세 요약 DOCX로 저장",
+                    data=docx_io,
+                    file_name="detailed_summary.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    key="detailed_docx_download"
+                ):
+                    st.success("상세 요약 DOCX 파일이 다운로드되었습니다.")
 
-            except Exception as e:
-                st.error(f"상세 요약 중 오류 발생: {str(e)}")
+        except Exception as e:
+            st.error(f"상세 요약 중 오류 발생: {str(e)}")
 
 else:
     st.warning("먼저 논문을 요약해주세요.")
