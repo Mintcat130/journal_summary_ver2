@@ -12,7 +12,7 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
         response = client.messages.create(
             model=model,
             max_tokens=3000,
-            temperature=0.7,
+            temperature=0.3,
             system="You are an AI assistant tasked with summarizing a research paper in Korean. You have expertise in pathology, medicine, and the application of AI in pathology. Your audience is also a pathologist.",
             messages=[
                 {
@@ -20,7 +20,7 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
                     "content": f"""Follow these instructions to create a concise and informative summary:
 
 1. Use Korean for the summary, but keep the paper title, medical terms, and proper nouns in their original English form.
-    Examples of medical terms: "colon adenocarcinoma", "eosinophils", "neuroblastoma", "leiomyoma", "mesangium", "intrinsic cells"
+    Examples of medical terms: "colon adenocarcinoma", "eosinophils", "neuroblastoma", "leiomyoma", "mesangium", "intrinsic cells", "fibroadenoma", "phyllodes tumor"
 2. Write in a concise style, using endings like '~함', '~임' for brevity.
 3. Use markdown format for better readability. Do not write in paragraph form.
 4. Structure your summary as follows:
@@ -37,6 +37,7 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
         - Method
         - Result
         - Discussion
+        - Conclusion
 5. Do not summarize anything after the 'References' section.
 6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
 
