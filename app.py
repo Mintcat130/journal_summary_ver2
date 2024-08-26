@@ -115,63 +115,63 @@ if st.button("요약하기"):
                     
                     # 요약 결과 처리 및 출력
                     summary_content = summary
-                   # <summary> 태그 제거
-                summary_content = re.sub(r'</?summary>', '', summary_content).strip()
-                # "Here is a summary of the research paper in Korean:" 텍스트 제거
-                summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', summary_content, flags=re.IGNORECASE)
-                
-                # 요약 결과를 세션 상태에 저장
-                st.session_state.summary_content = summary_content
+                    # <summary> 태그 제거
+                    summary_content = re.sub(r'</?summary>', '', summary_content).strip()
+                    # "Here is a summary of the research paper in Korean:" 텍스트 제거
+                    summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', summary_content, flags=re.IGNORECASE)
+                    
+                    # 요약 결과를 세션 상태에 저장
+                    st.session_state.summary_content = summary_content
 
-                # 요약 결과 한번만 출력
-                st.markdown(st.session_state.summary_content)
-            except Exception as e:
-                st.error(f"요약 중 오류 발생: {str(e)}")
-        
-        if 'summary_content' in st.session_state:
-            # JavaScript 함수를 사용하여 클립보드에 복사
-            st.markdown("""
-            <script>
-            function copyToClipboard(text) {
-                navigator.clipboard.writeText(text).then(function() {
-                    alert('결과가 클립보드에 복사되었습니다.');
-                }, function(err) {
-                    alert('복사 중 오류가 발생했습니다: ', err);
-                });
-            }
-            </script>
-            """, unsafe_allow_html=True)
-
-            if st.button("결과 복사", key="copy_button"):
-                st.markdown(f"""
-                <button onclick="copyToClipboard('{st.session_state.summary_content.replace("'", "\\'")}')">
-                    클립보드에 복사
-                </button>
+                    # 요약 결과 한번만 출력
+                    st.markdown(st.session_state.summary_content)
+                except Exception as e:
+                    st.error(f"요약 중 오류 발생: {str(e)}")
+            
+            if 'summary_content' in st.session_state:
+                # JavaScript 함수를 사용하여 클립보드에 복사
+                st.markdown("""
+                <script>
+                function copyToClipboard(text) {
+                    navigator.clipboard.writeText(text).then(function() {
+                        alert('결과가 클립보드에 복사되었습니다.');
+                    }, function(err) {
+                        alert('복사 중 오류가 발생했습니다: ', err);
+                    });
+                }
+                </script>
                 """, unsafe_allow_html=True)
 
-            if st.download_button(
-                label="TXT 파일로 저장",
-                data=st.session_state.summary_content,
-                file_name="summary.txt",
-                mime="text/plain",
-                key="txt_download"
-            ):
-                st.success("TXT 파일이 다운로드되었습니다.")
+                if st.button("결과 복사", key="copy_button"):
+                    st.markdown(f"""
+                    <button onclick="copyToClipboard('{st.session_state.summary_content.replace("'", "\\'")}')">
+                        클립보드에 복사
+                    </button>
+                    """, unsafe_allow_html=True)
 
-            docx_io = io.BytesIO()
-            doc = Document()
-            doc.add_paragraph(st.session_state.summary_content)
-            doc.save(docx_io)
-            docx_io.seek(0)
-            
-            if st.download_button(
-                label="DOCX 파일로 저장",
-                data=docx_io,
-                file_name="summary.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                key="docx_download"
-            ):
-                st.success("DOCX 파일이 다운로드되었습니다.")
+                if st.download_button(
+                    label="TXT 파일로 저장",
+                    data=st.session_state.summary_content,
+                    file_name="summary.txt",
+                    mime="text/plain",
+                    key="txt_download"
+                ):
+                    st.success("TXT 파일이 다운로드되었습니다.")
+
+                docx_io = io.BytesIO()
+                doc = Document()
+                doc.add_paragraph(st.session_state.summary_content)
+                doc.save(docx_io)
+                docx_io.seek(0)
+                
+                if st.download_button(
+                    label="DOCX 파일로 저장",
+                    data=docx_io,
+                    file_name="summary.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    key="docx_download"
+                ):
+                    st.success("DOCX 파일이 다운로드되었습니다.")
 
         else:
             st.warning("PDF 파일을 업로드하거나 URL을 입력해주세요.")
