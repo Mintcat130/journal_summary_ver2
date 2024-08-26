@@ -34,6 +34,7 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
         - Method
         - Result
         - Discussion
+        - Conclusion
 5. Do not summarize anything after the 'References' section.
 6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
 
@@ -227,11 +228,12 @@ if 'summary_content' in st.session_state and 'original_text' in st.session_state
    c. Overall Summary:
       - Provide a 5-line summary of the entire paper
    d. Detailed Section Summaries:
-      - Summarize each of the following sections in about 10 lines each:
+      - Summarize each of the following sections in about 10 lines each. not less than 5 lines:
         - Introduction
         - Method
         - Result
         - Discussion
+        - Conclusion
 5. Do not summarize anything after the 'References' section.
 6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
 
