@@ -159,7 +159,7 @@ if st.button("요약하기"):
                     ):
                         st.success("DOCX 파일이 다운로드되었습니다.")
 
-  elif url:
+elif url:
     try:
         # User-Agent 헤더 추가 및 세션 사용
         headers = {
