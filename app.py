@@ -1,3 +1,4 @@
+import anthropic
 import streamlit as st
 import requests
 from PyPDF2 import PdfReader
