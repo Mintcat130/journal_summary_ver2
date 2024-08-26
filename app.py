@@ -246,8 +246,8 @@ elif url:
                     ):
                         st.success("DOCX 파일이 다운로드되었습니다.")
 
-        else:
-            st.error(f"URL에서 데이터를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
+                else:
+                    st.error(f"URL에서 데이터를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
     
             except requests.exceptions.RequestException as e:
                 st.error(f"URL 요청 중 오류 발생: {str(e)}")
