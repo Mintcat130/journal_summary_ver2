@@ -42,22 +42,23 @@ Text to summarize:
 
     try:
         with st.empty():
-            stream = client.messages.stream(
+            stream = client.messages.create(
                 model=model,
                 max_tokens=3000,
-                temperature=0.7,
+                temperature=0.3,
                 system="You are an AI assistant tasked with summarizing a research paper in Korean. You have expertise in pathology, medicine, and the application of AI in pathology. Your audience is also a pathologist.",
                 messages=[
                     {
                         "role": "user",
                         "content": prompt
                     }
-                ]
+                ],
+                stream=True
             )
             response = ""
             for chunk in stream:
-                if chunk.type == "content_block_delta":
-                    response += chunk.delta.text
+                if chunk.type == "content_block":
+                    response += chunk.text
                     st.markdown(response)
         return response
     except Exception as e:
