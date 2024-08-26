@@ -11,7 +11,7 @@ import io
 if 'original_text' not in st.session_state:
     st.session_state.original_text = ""
 
-def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620"):
+def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620", system_prompt="You are an AI assistant tasked with summarizing a research paper in Korean. You have expertise in pathology, medicine, and the application of AI in pathology. Your audience is also a pathologist."):
     client = anthropic.Anthropic(api_key=api_key)
     
     prompt = f"""Follow these instructions to create a concise and informative summary:
@@ -50,11 +50,11 @@ Remember to use markdown formatting for headers and list items.
             model=model,
             max_tokens=3000,
             temperature=0.3,
-            system="You are an AI assistant tasked with summarizing a research paper in Korean. You have expertise in pathology, medicine, and the application of AI in pathology. Your audience is also a pathologist.",
+            system=system_prompt,
             messages=[
                 {
                     "role": "user",
-                    "content": prompt
+                    "content": text
                 }
             ]
         )
@@ -257,8 +257,8 @@ if 'summary_content' in st.session_state and 'original_text' in st.session_state
    c. Overall Summary:
       - Provide a 5-line summary of the entire paper
    d. Detailed Section Summaries:
-      - IMPORTANT: Summarize each of the following sections in EXACTLY 10 lines. No less, no more.
-      - Use bullet points for each line to ensure exactly 10 lines per section.
+      - IMPORTANT: Summarize each of the following sections in about 10 lines.
+      - Use bullet points for each line per section.
       - Sections to summarize:
         • Introduction
         • Method
@@ -267,17 +267,17 @@ if 'summary_content' in st.session_state and 'original_text' in st.session_state
         • Conclusion
 5. Do not summarize anything after the 'References' section.
 6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
-7. REMINDER: Each section summary MUST be EXACTLY 10 lines long. This is crucial for the desired output format.
+7. REMINDER: Each section summary MUST be more than 6 lines long. This is crucial for the desired output format.
 
 Text to summarize:
 
-{st.session_state.original_text}"""
+            {st.session_state.original_text}"""
 
-                detailed_summary = summarize_with_anthropic(api_key, detailed_prompt)
-                detailed_summary_content = re.sub(r'</?summary>', '', detailed_summary).strip()
-                detailed_summary_content = re.sub(r'^Here is a more detailed summary of the research paper in Korean:\s*', '', detailed_summary_content, flags=re.IGNORECASE)
-                st.markdown("## 상세 요약")
-                st.markdown(detailed_summary_content)
+            detailed_summary = summarize_with_anthropic(api_key, detailed_prompt, system_prompt="You are an AI assistant tasked with creating detailed summaries of research papers in Korean. Your summaries should be thorough and follow the given instructions precisely.")
+            detailed_summary_content = re.sub(r'</?summary>', '', detailed_summary).strip()
+            detailed_summary_content = re.sub(r'^Here is a more detailed summary of the research paper in Korean:\s*', '', detailed_summary_content, flags=re.IGNORECASE)
+            st.markdown("## 상세 요약")
+            st.markdown(detailed_summary_content)
 
                 # 상세 요약 결과에 대한 파일 저장 버튼
                 col1, col2 = st.columns(2)
