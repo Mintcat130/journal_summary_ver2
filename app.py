@@ -163,14 +163,9 @@ if st.button("요약하기"):
 if 'summary_content' in st.session_state:
     st.markdown(st.session_state.summary_content)
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     
     with col1:
-        if st.button("결과 복사", key="copy_button"):
-            st.code(st.session_state.summary_content)
-            st.success("위의 코드 블록을 복사하세요.")
-    
-    with col2:
         if st.download_button(
             label="TXT 파일로 저장",
             data=st.session_state.summary_content,
@@ -180,7 +175,7 @@ if 'summary_content' in st.session_state:
         ):
             st.success("TXT 파일이 다운로드되었습니다.")
 
-    with col3:
+    with col2:
         docx_io = io.BytesIO()
         doc = Document()
         doc.add_paragraph(st.session_state.summary_content)
