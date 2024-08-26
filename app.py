@@ -114,13 +114,20 @@ if st.button("요약하기"):
             for page in pdf_reader.pages:
                 text += page.extract_text()
             
-            # Anthropic API를 사용하여 요약을 수행합니다.
-            summary = summarize_with_anthropic(api_key, text)
-            
-            # 요약 결과 처리 및 출력
-            summary_content = summary
-            # <summary> 태그 제거
-            summary_content = re.sub(r'</?summary>', '', summary_content).strip()
+           # 요약 중 메시지 표시
+            with st.spinner("논문 요약 중입니다..."):
+                try:
+                    # Anthropic API를 사용하여 요약을 수행합니다.
+                    summary = summarize_with_anthropic(api_key, text)
+                    
+                    # 요약 결과 처리 및 출력
+                    summary_content = summary
+                    # <summary> 태그 제거
+                    summary_content = re.sub(r'</?summary>', '', summary_content).strip()
+                    
+                    st.markdown(summary_content)
+                except Exception as e:
+                    st.error(f"요약 중 오류 발생: {str(e)}")
             
             st.markdown(summary_content)
             
