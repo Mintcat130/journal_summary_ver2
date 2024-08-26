@@ -309,7 +309,7 @@ Text to summarize:
                 ):
                     st.success("상세 요약 DOCX 파일이 다운로드되었습니다.")
 
-       except Exception as e:
+        except Exception as e:
             st.error(f"상세 요약 중 오류 발생: {str(e)}")
             st.error("오류 상세 정보:")
             st.error(str(e))  # 더 자세한 오류 정보 표시
