@@ -200,48 +200,48 @@ if 'summary_content' in st.session_state and 'original_text' in st.session_state
         ):
             st.success("DOCX 파일이 다운로드되었습니다.")
 
- # 새로운 버튼 추가
-    if st.button("한번 더 다르게 요약해보기"):
-        with st.spinner("다시 요약 중입니다..."):
-            try:
-                new_summary = summarize_with_anthropic(api_key, st.session_state.original_text)
-                new_summary_content = re.sub(r'</?summary>', '', new_summary).strip()
-                new_summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', new_summary_content, flags=re.IGNORECASE)
-                st.markdown("## 새로운 요약")
-                st.markdown(new_summary_content)
+# 새로운 버튼 추가
+if st.button("한번 더 다르게 요약해보기"):
+    with st.spinner("다시 요약 중입니다..."):
+        try:
+            new_summary = summarize_with_anthropic(api_key, st.session_state.original_text)
+            new_summary_content = re.sub(r'</?summary>', '', new_summary).strip()
+            new_summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', new_summary_content, flags=re.IGNORECASE)
+            st.markdown("## 새로운 요약")
+            st.markdown(new_summary_content)
 
-                # 새로운 요약 결과에 대한 파일 저장 버튼
-                col1, col2 = st.columns(2)
-                with col1:
-                    if st.download_button(
-                        label="새 요약 TXT로 저장",
-                        data=new_summary_content,
-                        file_name="new_summary.txt",
-                        mime="text/plain",
-                        key="new_txt_download"
-                    ):
-                        st.success("새로운 요약 TXT 파일이 다운로드되었습니다.")
+            # 새로운 요약 결과에 대한 파일 저장 버튼
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.download_button(
+                    label="새 요약 TXT로 저장",
+                    data=new_summary_content,
+                    file_name="new_summary.txt",
+                    mime="text/plain",
+                    key="new_txt_download"
+                ):
+                    st.success("새로운 요약 TXT 파일이 다운로드되었습니다.")
 
-                with col2:
-                    docx_io = io.BytesIO()
-                    doc = Document()
-                    doc.add_paragraph(new_summary_content)
-                    doc.save(docx_io)
-                    docx_io.seek(0)
-                    
-                    if st.download_button(
-                        label="새 요약 DOCX로 저장",
-                        data=docx_io,
-                        file_name="new_summary.docx",
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                        key="new_docx_download"
-                    ):
-                        st.success("새로운 요약 DOCX 파일이 다운로드되었습니다.")
+            with col2:
+                docx_io = io.BytesIO()
+                doc = Document()
+                doc.add_paragraph(new_summary_content)
+                doc.save(docx_io)
+                docx_io.seek(0)
+                
+                if st.download_button(
+                    label="새 요약 DOCX로 저장",
+                    data=docx_io,
+                    file_name="new_summary.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    key="new_docx_download"
+                ):
+                    st.success("새로운 요약 DOCX 파일이 다운로드되었습니다.")
 
-            except Exception as e:
-                st.error(f"새로운 요약 중 오류 발생: {str(e)}")
+        except Exception as e:
+            st.error(f"새로운 요약 중 오류 발생: {str(e)}")
 
-  if st.button("더 길고 디테일하게 요약해보기"):
+if st.button("더 길고 디테일하게 요약해보기"):
     with st.spinner("상세 요약 중입니다..."):
         try:
             detailed_prompt = f"""Follow these instructions to create a more detailed summary:
