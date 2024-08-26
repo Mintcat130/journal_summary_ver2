@@ -48,7 +48,7 @@ Text to summarize:
     try:
         response = client.messages.create(
             model=model,
-            max_tokens=3000,
+            max_tokens=4000,
             temperature=0.3,
             system=system_prompt,
             messages=[
@@ -160,7 +160,7 @@ if st.button("요약하기"):
                     summary_content = re.sub(r'</?summary>', '', summary).strip()
                     summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', summary_content, flags=re.IGNORECASE)
                     st.session_state.summary_content = summary_content
-                    st.markdown(st.session_state.summary_content)
+                    st.success("요약이 완료되었습니다.")  # 성공 메시지만 표시
                 except Exception as e:
                     st.error(f"요약 중 오류 발생: {str(e)}")
         else:
@@ -309,9 +309,10 @@ Text to summarize:
                 ):
                     st.success("상세 요약 DOCX 파일이 다운로드되었습니다.")
 
-        except Exception as e:
+       except Exception as e:
             st.error(f"상세 요약 중 오류 발생: {str(e)}")
-
+            st.error("오류 상세 정보:")
+            st.error(str(e))  # 더 자세한 오류 정보 표시
 else:
     st.warning("먼저 논문을 요약해주세요.")
 
