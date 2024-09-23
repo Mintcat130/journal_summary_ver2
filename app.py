@@ -165,35 +165,13 @@ if st.button("요약하기"):
 
 # 요약 결과 표시 및 버튼 생성
 if 'summary_content' in st.session_state and 'original_text' in st.session_state:
-    st.markdown(st.session_state.summary_content)
-
-    col1, col2 = st.columns(2)
+    st.markdown("## 요약 결과")
+    st.code(st.session_state.summary_content, language="markdown")
     
-    with col1:
-        if st.download_button(
-            label="TXT 파일로 저장",
-            data=st.session_state.summary_content,
-            file_name="summary.txt",
-            mime="text/plain",
-            key="txt_download"
-        ):
-            st.success("TXT 파일이 다운로드되었습니다.")
-
-    with col2:
-        docx_io = io.BytesIO()
-        doc = Document()
-        doc.add_paragraph(st.session_state.summary_content)
-        doc.save(docx_io)
-        docx_io.seek(0)
-        
-        if st.download_button(
-            label="DOCX 파일로 저장",
-            data=docx_io,
-            file_name="summary.docx",
-            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            key="docx_download"
-        ):
-            st.success("DOCX 파일이 다운로드되었습니다.")
+    if st.button("클립보드에 복사"):
+        st.write("요약 내용이 클립보드에 복사되었습니다.")
+        st.markdown("아래 텍스트 영역을 클릭하고 Ctrl+C (Mac에서는 Cmd+C)를 눌러 복사하세요.")
+        st.text_area("", value=st.session_state.summary_content, height=100)
 
 # 새로운 버튼 추가
 if st.button("한번 더 다르게 요약해보기"):
@@ -203,38 +181,16 @@ if st.button("한번 더 다르게 요약해보기"):
             new_summary_content = re.sub(r'</?summary>', '', new_summary).strip()
             new_summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', new_summary_content, flags=re.IGNORECASE)
             st.markdown("## 새로운 요약")
-            st.markdown(new_summary_content)
-
-            # 새로운 요약 결과에 대한 파일 저장 버튼
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.download_button(
-                    label="새 요약 TXT로 저장",
-                    data=new_summary_content,
-                    file_name="new_summary.txt",
-                    mime="text/plain",
-                    key="new_txt_download"
-                ):
-                    st.success("새로운 요약 TXT 파일이 다운로드되었습니다.")
-
-            with col2:
-                docx_io = io.BytesIO()
-                doc = Document()
-                doc.add_paragraph(new_summary_content)
-                doc.save(docx_io)
-                docx_io.seek(0)
-                
-                if st.download_button(
-                    label="새 요약 DOCX로 저장",
-                    data=docx_io,
-                    file_name="new_summary.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    key="new_docx_download"
-                ):
-                    st.success("새로운 요약 DOCX 파일이 다운로드되었습니다.")
+            st.code(new_summary_content, language="markdown")
+            
+            if st.button("새 요약 클립보드에 복사"):
+                st.write("새로운 요약 내용이 클립보드에 복사되었습니다.")
+                st.markdown("아래 텍스트 영역을 클릭하고 Ctrl+C (Mac에서는 Cmd+C)를 눌러 복사하세요.")
+                st.text_area("", value=new_summary_content, height=100)
 
         except Exception as e:
             st.error(f"새로운 요약 중 오류 발생: {str(e)}")
+
 
 if st.button("더 길고 디테일하게 요약해보기"):
     with st.spinner("상세 요약 중입니다..."):
@@ -278,38 +234,15 @@ Text to summarize:
             st.markdown("## 상세 요약")
             st.markdown(detailed_summary_content)
 
-            # 상세 요약 결과에 대한 파일 저장 버튼
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.download_button(
-                    label="상세 요약 TXT로 저장",
-                    data=detailed_summary_content,
-                    file_name="detailed_summary.txt",
-                    mime="text/plain",
-                    key="detailed_txt_download"
-                ):
-                    st.success("상세 요약 TXT 파일이 다운로드되었습니다.")
-
-            with col2:
-                docx_io = io.BytesIO()
-                doc = Document()
-                doc.add_paragraph(detailed_summary_content)
-                doc.save(docx_io)
-                docx_io.seek(0)
-                
-                if st.download_button(
-                    label="상세 요약 DOCX로 저장",
-                    data=docx_io,
-                    file_name="detailed_summary.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    key="detailed_docx_download"
-                ):
-                    st.success("상세 요약 DOCX 파일이 다운로드되었습니다.")
+            if st.button("상세 요약 클립보드에 복사"):
+                st.write("상세 요약 내용이 클립보드에 복사되었습니다.")
+                st.markdown("아래 텍스트 영역을 클릭하고 Ctrl+C (Mac에서는 Cmd+C)를 눌러 복사하세요.")
+                st.text_area("", value=detailed_summary_content, height=100)
 
         except Exception as e:
             st.error(f"상세 요약 중 오류 발생: {str(e)}")
             st.error("오류 상세 정보:")
-            st.error(str(e))  # 더 자세한 오류 정보 표시
+            st.error(str(e))
 else:
     st.warning("먼저 논문을 요약해주세요.")
 
