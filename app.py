@@ -59,8 +59,11 @@ Text to summarize:
             ]
         )
         return response.content[0].text
-    except Exception as e:
-        raise Exception(f"API 오류: {str(e)}")
+    except anthropic.APIError as e:
+        if e.status_code == 529:
+            raise Exception("API가 현재 과부하 상태입니다. 잠시 후 다시 시도해 주세요.")
+        else:
+            raise Exception(f"API 오류: {str(e)}")
 
 # 페이지 설정
 st.set_page_config(
@@ -155,9 +158,13 @@ if st.button("요약하기"):
                     summary_content = re.sub(r'</?summary>', '', summary).strip()
                     summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', summary_content, flags=re.IGNORECASE)
                     st.session_state.summary_content = summary_content
-                    st.success("요약이 완료되었습니다.")  # 성공 메시지만 표시
+                    st.success("요약이 완료되었습니다.")
                 except Exception as e:
                     st.error(f"요약 중 오류 발생: {str(e)}")
+                    if "과부하 상태" in str(e):
+                        st.info("API 서버가 현재 많은 요청을 처리하고 있습니다. 잠시 후에 다시 시도해 주세요.")
+                    else:
+                        st.info("예기치 못한 오류가 발생했습니다. 문제가 지속되면 관리자에게 문의해 주세요.")
         else:
             st.warning("PDF 파일을 업로드하거나 유효한 URL을 입력해주세요.")
     else:
