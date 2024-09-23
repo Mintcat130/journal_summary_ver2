@@ -249,6 +249,8 @@ if st.button("더 길고 디테일하게 요약해보기"):
       - Format: ## [Original English Title] (published year)
    b. Keywords:
       - List approximately 5 key terms from the paper.
+      - Format each keyword with backticks, like this: `keyword`
+      - Example: `colon adenocarcinoma`, `object detection`, `neuropathology`
    c. Overall Summary:
       - Provide a 5-line summary of the entire paper
    d. Detailed Section Summaries:
