@@ -113,7 +113,7 @@ if st.button("요약하기"):
             try:
                 # User-Agent 헤더 추가 및 세션 사용
                 headers = {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
                 }
                 session = requests.Session()
                 response = session.get(url, headers=headers, timeout=10)
@@ -135,7 +135,12 @@ if st.button("요약하기"):
                 else:
                     st.error(f"URL에서 데이터를 가져오는 데 실패했습니다. 상태 코드: {response.status_code}")
             except requests.exceptions.RequestException as e:
-                st.error(f"URL 요청 중 오류 발생: {str(e)}")
+                st.error("URL에서 PDF를 직접 다운로드할 수 없습니다. 다음 방법을 시도해보세요:")
+                st.markdown("""
+                1. PDF 파일을 다운로드 후 직접 업로드해주세요.
+                2. 공개적으로 접근 가능한 URL을 사용해주세요.
+                """)
+                text = ""
             except Exception as e:
                 st.error(f"예상치 못한 오류 발생: {str(e)}")
                 text = ""
