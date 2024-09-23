@@ -175,8 +175,8 @@ if st.button("요약하기"):
 if 'summary_content' in st.session_state and 'original_text' in st.session_state:
     st.markdown(st.session_state.summary_content)
     
-    st.markdown("#### 요약 내용 복사(오른쪽 위 복사표시 아이콘 클릭하면 클립보드에 복사됩니다)")
-    st.text_area("", value=st.session_state.summary_content, height=100, key="summary_copy")
+    st.markdown("#### 요약 내용 편집")
+    st.text_area("", value=st.session_state.summary_content, height=200, key="summary_copy")
 
 # 새로운 버튼 추가
 if st.button("한번 더 다르게 요약해보기"):
@@ -189,7 +189,7 @@ if st.button("한번 더 다르게 요약해보기"):
             st.markdown(new_summary_content)
             
             st.markdown("### 새 요약 내용 복사")
-            st.text_area("", value=new_summary_content, height=100, key="new_summary_copy")
+            st.text_area("", value=new_summary_content, height=200, key="new_summary_copy")
 
         except Exception as e:
             st.error(f"새로운 요약 중 오류 발생: {str(e)}")
@@ -237,7 +237,7 @@ Text to summarize:
             st.markdown(detailed_summary_content)
             
             st.markdown("### 상세 요약 내용 복사")
-            st.text_area("", value=detailed_summary_content, height=100, key="detailed_summary_copy")
+            st.text_area("", value=detailed_summary_content, height=200, key="detailed_summary_copy")
 
         except Exception as e:
             st.error(f"상세 요약 중 오류 발생: {str(e)}")
