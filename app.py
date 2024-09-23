@@ -73,7 +73,7 @@ st.title("병리 논문 요약하기📝_ver2 (HJY)")
 
 
 # API Key 입력 섹션
-api_key = st.text_input("Anthropic API Key를 입력하세요", type="password")
+api_key = st.text_input("Anthropic API Key를 입력 후 엔터를 누르세요", type="password")
 
 # API 키 검증
 if api_key:
@@ -96,7 +96,7 @@ if api_key:
 
 # 파일 업로드 및 URL 입력 섹션
 uploaded_file = st.file_uploader("PDF 파일을 업로드하세요", type=["pdf"])
-url = st.text_input("논문 URL을 입력하세요")
+url = st.text_input("논문 URL을 입력하세요. PDF 파일이 나타나는 페이지의 링크여야 합니다. 예시)https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7433998/pdf/tjg-31-6-441.pdf ")
 
 
 
