@@ -24,8 +24,9 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620", 
    a. Title:
       - Format: ## [Original English Title] (published year)
    b. Keywords:
-      - List approximately 5 key terms from the paper. 한눈에 알아보기 쉽게 각 단어가 시각적으로 잘 구분될 수 있게 출력하기
-          (examples: "colon adenocarcinoma", "object detection", "neuropathology")
+      - List approximately 5 key terms from the paper. 
+      - Format each keyword with backticks, like this: `keyword`
+      - Example: `colon adenocarcinoma`, `object detection`, `neuropathology`
    c. Overall Summary:
       - Provide a 3-line summary of the entire paper
    d. Detailed Section Summaries:
@@ -172,13 +173,10 @@ if st.button("요약하기"):
 
 # 요약 결과 표시 및 버튼 생성
 if 'summary_content' in st.session_state and 'original_text' in st.session_state:
-    st.markdown("## 요약 결과")
-    st.code(st.session_state.summary_content, language="markdown")
+    st.markdown(st.session_state.summary_content)
     
-    if st.button("클립보드에 복사"):
-        st.write("요약 내용이 클립보드에 복사되었습니다.")
-        st.markdown("아래 텍스트 영역을 클릭하고 Ctrl+C (Mac에서는 Cmd+C)를 눌러 복사하세요.")
-        st.text_area("", value=st.session_state.summary_content, height=100)
+    st.markdown("### 요약 내용 복사")
+    st.code(st.session_state.summary_content, language="markdown")
 
 # 새로운 버튼 추가
 if st.button("한번 더 다르게 요약해보기"):
@@ -188,16 +186,13 @@ if st.button("한번 더 다르게 요약해보기"):
             new_summary_content = re.sub(r'</?summary>', '', new_summary).strip()
             new_summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', new_summary_content, flags=re.IGNORECASE)
             st.markdown("## 새로운 요약")
-            st.code(new_summary_content, language="markdown")
+            st.markdown(new_summary_content)
             
-            if st.button("새 요약 클립보드에 복사"):
-                st.write("새로운 요약 내용이 클립보드에 복사되었습니다.")
-                st.markdown("아래 텍스트 영역을 클릭하고 Ctrl+C (Mac에서는 Cmd+C)를 눌러 복사하세요.")
-                st.text_area("", value=new_summary_content, height=100)
+            st.markdown("### 새 요약 내용 복사")
+            st.code(new_summary_content, language="markdown")
 
         except Exception as e:
             st.error(f"새로운 요약 중 오류 발생: {str(e)}")
-
 
 if st.button("더 길고 디테일하게 요약해보기"):
     with st.spinner("상세 요약 중입니다..."):
@@ -240,11 +235,9 @@ Text to summarize:
             detailed_summary_content = re.sub(r'^Here is a more detailed summary of the research paper in Korean:\s*', '', detailed_summary_content, flags=re.IGNORECASE)
             st.markdown("## 상세 요약")
             st.markdown(detailed_summary_content)
-
-            if st.button("상세 요약 클립보드에 복사"):
-                st.write("상세 요약 내용이 클립보드에 복사되었습니다.")
-                st.markdown("아래 텍스트 영역을 클릭하고 Ctrl+C (Mac에서는 Cmd+C)를 눌러 복사하세요.")
-                st.text_area("", value=detailed_summary_content, height=100)
+            
+            st.markdown("### 상세 요약 내용 복사")
+            st.code(detailed_summary_content, language="markdown")
 
         except Exception as e:
             st.error(f"상세 요약 중 오류 발생: {str(e)}")
