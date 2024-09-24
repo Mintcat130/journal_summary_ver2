@@ -42,7 +42,7 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620", 
 6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
 
 Remember to use markdown formatting for headers and list items.
-요약 내용 말고 다른 말은 아무것도 적지 말것
+요약 내용 이 외 다른 말은 아무것도 적지 말것.
 
 Text to summarize:
 
@@ -177,8 +177,8 @@ if st.button("요약하기"):
 if 'summary_content' in st.session_state and 'original_text' in st.session_state:
     st.markdown(st.session_state.summary_content)
     
-    st.markdown("#### 요약 내용 편집")
-    st.text_area("", value=st.session_state.summary_content, height=200, key="summary_copy")
+    st.markdown("### 요약 내용 복사")
+    st.code(st.session_state.summary_content, language="markdown")
 
 # 새로운 버튼 추가
 if st.button("한번 더 다르게 요약해보기"):
@@ -191,7 +191,7 @@ if st.button("한번 더 다르게 요약해보기"):
             st.markdown(new_summary_content)
             
             st.markdown("### 새 요약 내용 복사")
-            st.text_area("", value=new_summary_content, height=200, key="new_summary_copy")
+            st.code(new_summary_content, language="markdown")
 
         except Exception as e:
             st.error(f"새로운 요약 중 오류 발생: {str(e)}")
@@ -239,7 +239,7 @@ Text to summarize:
             st.markdown(detailed_summary_content)
             
             st.markdown("### 상세 요약 내용 복사")
-            st.text_area("", value=detailed_summary_content, height=200, key="detailed_summary_copy")
+            st.code(detailed_summary_content, language="markdown")
 
         except Exception as e:
             st.error(f"상세 요약 중 오류 발생: {str(e)}")
