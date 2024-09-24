@@ -7,6 +7,17 @@ import re
 from docx import Document
 import io
 
+
+# CSS를 사용하여 코드 블록의 높이를 제한합니다.
+st.markdown("""
+<style>
+    .stCode {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # 여기에 새 코드를 추가합니다
 if 'original_text' not in st.session_state:
     st.session_state.original_text = ""
