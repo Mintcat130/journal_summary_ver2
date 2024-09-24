@@ -41,9 +41,9 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620", 
         - Conclusion
 5. Do not summarize anything after the 'References' section.
 6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
+7. 요약 내용 이외 불필요한 말은 아무것도 하지 말것.
 
 Remember to use markdown formatting for headers and list items.
-요약 내용 이 외 다른 말은 아무것도 적지 말것.
 
 Text to summarize:
 
@@ -206,7 +206,7 @@ if st.button("더 길고 디테일하게 요약해보기"):
                       - Format: ## [Original English Title] (published year)
                    b. Authors:
                       - List the authors' names in the original English form
-                      - Format: ### Authors: [Author1], [Author2], ...
+                      - Format: **Authors: [Author1], [Author2], ... **
                    c. Keywords:
                       - List approximately 5 key terms from the paper.
                       - Format each keyword with backticks, like this: `keyword`
@@ -224,6 +224,7 @@ if st.button("더 길고 디테일하게 요약해보기"):
                 5. Do not summarize anything after the 'References' section.
                 6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
                 7. REMINDER: Each section summary MUST be more than 5 lines long. This is crucial for the desired output format.
+                8. 요약 내용 이외 불필요한 말은 아무것도 하지 말것.
 
                 Text to summarize:
 
