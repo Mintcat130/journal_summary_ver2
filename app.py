@@ -8,16 +8,6 @@ from docx import Document
 import io
 
 
-# CSS를 사용하여 코드 블록의 높이를 제한합니다.
-st.markdown("""
-<style>
-    .stCode {
-        max-height: 200px;
-        overflow-y: auto;
-    }
-</style>
-""", unsafe_allow_html=True)
-
 # 여기에 새 코드를 추가합니다
 if 'original_text' not in st.session_state:
     st.session_state.original_text = ""
@@ -85,6 +75,16 @@ st.set_page_config(
     page_icon="📝",
 )
 
+# CSS를 사용하여 코드 블록의 높이를 제한합니다.
+st.markdown("""
+<style>
+    .stCode {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # UI 제목
 st.title("병리 논문 요약하기📝_ver2 (HJY)")
 
@@ -110,6 +110,7 @@ if api_key:
     except Exception as e:
         st.error(f"API 키 검증 중 오류가 발생했습니다: {str(e)}")
         api_key = None
+
 
 # 파일 업로드 및 URL 입력 섹션
 uploaded_file = st.file_uploader("PDF 파일을 업로드하세요", type=["pdf"])
