@@ -228,7 +228,7 @@ Text to summarize:
 
 {st.session_state.original_text}"""
 
-            detailed_system_prompt = "You are an AI assistant tasked with creating detailed summaries of research papers in Korean. Your summaries should be thorough and follow the given instructions precisely."
+        detailed_system_prompt = "You are an AI assistant tasked with creating detailed summaries of research papers in Korean. Your summaries should be thorough and follow the given instructions precisely."
             
             detailed_summary = summarize_with_anthropic(api_key, detailed_prompt, system_prompt=detailed_system_prompt)
             detailed_summary_content = re.sub(r'</?summary>', '', detailed_summary).strip()
