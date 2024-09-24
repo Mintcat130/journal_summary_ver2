@@ -228,7 +228,7 @@ Text to summarize:
 
 {st.session_state.original_text}"""
 
-        detailed_system_prompt = "You are an AI assistant tasked with creating detailed summaries of research papers in Korean. Your summaries should be thorough and follow the given instructions precisely."
+            detailed_system_prompt = "You are an AI assistant tasked with creating detailed summaries of research papers in Korean. Your summaries should be thorough and follow the given instructions precisely."
             
             detailed_summary = summarize_with_anthropic(api_key, detailed_prompt, system_prompt=detailed_system_prompt)
             detailed_summary_content = re.sub(r'</?summary>', '', detailed_summary).strip()
@@ -239,6 +239,7 @@ Text to summarize:
             st.markdown("### 상세 요약 내용 복사")
             st.text("코드블럭에 커서를 올리면 우측 상단에 생성되는 복사 버튼을 눌러 내용을 클립보드에 복사 가능합니다")
             st.code(detailed_summary_content, language="markdown")
+            
 
         except Exception as e:
                 st.error(f"상세 요약 중 오류 발생: {str(e)}")
