@@ -198,50 +198,50 @@ if st.button("더 길고 디테일하게 요약해보기"):
         with st.spinner("상세 요약 중입니다..."):
             try:
                 detailed_prompt = f"""Follow these instructions to create a more detailed summary:
+                1. Use Korean for the summary, but keep the paper title, medical terms, and proper nouns in their original English form.
+                2. Write in a concise style, using endings like '~함', '~임' for brevity.
+                3. Use markdown format for better readability. Do not write in paragraph form.
+                4. Structure your summary as follows:
+                   a. Title:
+                      - Format: ## [Original English Title] (published year)
+                   b. Authors:
+                      - List the authors' names in the original English form
+                      - Format: ### Authors: [Author1], [Author2], ...
+                   c. Keywords:
+                      - List approximately 5 key terms from the paper.
+                      - Format each keyword with backticks, like this: `keyword`
+                   d. Overall Summary:
+                      - Provide a 5-line summary of the entire paper
+                   e. Detailed Section Summaries:
+                      - IMPORTANT: Summarize each of the following sections in about 10 lines. 
+                      - Use bullet points for each line per section.
+                      - Sections to summarize:
+                        • Introduction
+                        • Method
+                        • Result
+                        • Discussion
+                        • Conclusion
+                5. Do not summarize anything after the 'References' section.
+                6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
+                7. REMINDER: Each section summary MUST be more than 5 lines long. This is crucial for the desired output format.
+
+                Text to summarize:
+
+                {st.session_state.original_text}"""
+
+                detailed_system_prompt = "You are an AI assistant tasked with creating detailed summaries of research papers in Korean. Your summaries should be thorough and follow the given instructions precisely."
                 
-1. Use Korean for the summary, but keep the paper title, medical terms, and proper nouns in their original English form.
-2. Write in a concise style, using endings like '~함', '~임' for brevity.
-3. Use markdown format for better readability. Do not write in paragraph form.
-4. Structure your summary as follows:
-   a. Title:
-      - Format: ## [Original English Title] (published year)
-   b. Keywords:
-      - List approximately 5 key terms from the paper.
-      - Format each keyword with backticks, like this: `keyword`
-      - Example: `colon adenocarcinoma`, `object detection`, `neuropathology`
-   c. Overall Summary:
-      - Provide a 5-line summary of the entire paper
-   d. Detailed Section Summaries:
-      - IMPORTANT: Summarize each of the following sections in about 10 lines. 
-      - Use bullet points for each line per section.
-      - Sections to summarize:
-        • Introduction
-        • Method
-        • Result
-        • Discussion
-        • Conclusion
-5. Do not summarize anything after the 'References' section.
-6. Ensure all medical terms, proper nouns, and other specialized vocabulary remain in English.
-7. REMINDER: Each section summary MUST be more than 5 lines long. This is crucial for the desired output format.
+                detailed_summary = summarize_with_anthropic(api_key, detailed_prompt, system_prompt=detailed_system_prompt)
+                detailed_summary_content = re.sub(r'</?summary>', '', detailed_summary).strip()
+                detailed_summary_content = re.sub(r'^Here is a more detailed summary of the research paper in Korean:\s*', '', detailed_summary_content, flags=re.IGNORECASE)
+                st.markdown("## 상세 요약")
+                st.markdown(detailed_summary_content)
+                
+                st.markdown("### 상세 요약 내용 복사")
+                st.text("코드블럭에 커서를 올리면 우측 상단에 생성되는 복사 버튼을 눌러 내용을 클립보드에 복사 가능합니다")
+                st.code(detailed_summary_content, language="markdown")
 
-Text to summarize:
-
-{st.session_state.original_text}"""
-
-            detailed_system_prompt = "You are an AI assistant tasked with creating detailed summaries of research papers in Korean. Your summaries should be thorough and follow the given instructions precisely."
-            
-            detailed_summary = summarize_with_anthropic(api_key, detailed_prompt, system_prompt=detailed_system_prompt)
-            detailed_summary_content = re.sub(r'</?summary>', '', detailed_summary).strip()
-            detailed_summary_content = re.sub(r'^Here is a more detailed summary of the research paper in Korean:\s*', '', detailed_summary_content, flags=re.IGNORECASE)
-            st.markdown("## 상세 요약")
-            st.markdown(detailed_summary_content)
-            
-            st.markdown("### 상세 요약 내용 복사")
-            st.text("코드블럭에 커서를 올리면 우측 상단에 생성되는 복사 버튼을 눌러 내용을 클립보드에 복사 가능합니다")
-            st.code(detailed_summary_content, language="markdown")
-            
-
-        except Exception as e:
+            except Exception as e:
                 st.error(f"상세 요약 중 오류 발생: {str(e)}")
                 st.error("오류 상세 정보:")
                 st.error(str(e))
@@ -249,4 +249,3 @@ Text to summarize:
         st.error("유효한 API 키를 입력해주세요.")
 else:
     st.warning("먼저 논문을 요약해주세요.")
-
