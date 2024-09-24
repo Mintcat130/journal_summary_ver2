@@ -193,11 +193,12 @@ if 'summary_content' in st.session_state and 'original_text' in st.session_state
     st.text("코드블럭에 커서를 올리면 우측 상단에 생성되는 복사 버튼을 눌러 내용을 클립보드에 복사 가능합니다")
     st.code(st.session_state.summary_content, language="markdown")
 
-if st.button("더 상세하게 요약해보기"):
-    with st.spinner("상세 요약 중입니다..."):
-        try:
-            detailed_prompt = f"""Follow these instructions to create a more detailed summary:
-
+if st.button("더 길고 디테일하게 요약해보기"):
+    if api_key:  # API 키가 입력되었는지 확인
+        with st.spinner("상세 요약 중입니다..."):
+            try:
+                detailed_prompt = f"""Follow these instructions to create a more detailed summary:
+                
 1. Use Korean for the summary, but keep the paper title, medical terms, and proper nouns in their original English form.
 2. Write in a concise style, using endings like '~함', '~임' for brevity.
 3. Use markdown format for better readability. Do not write in paragraph form.
@@ -240,9 +241,11 @@ Text to summarize:
             st.code(detailed_summary_content, language="markdown")
 
         except Exception as e:
-            st.error(f"상세 요약 중 오류 발생: {str(e)}")
-            st.error("오류 상세 정보:")
-            st.error(str(e))
+                st.error(f"상세 요약 중 오류 발생: {str(e)}")
+                st.error("오류 상세 정보:")
+                st.error(str(e))
+    else:
+        st.error("유효한 API 키를 입력해주세요.")
 else:
     st.warning("먼저 논문을 요약해주세요.")
 
