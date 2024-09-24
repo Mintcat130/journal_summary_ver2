@@ -24,7 +24,7 @@ def summarize_with_anthropic(api_key, text, model="claude-3-5-sonnet-20240620", 
       - Format: ## [Original English Title] (published year)
    b. Authors:
       - List the authors' names in the original English form
-      - Format: ### Authors: [Author1], [Author2], ...
+      - Format: #### Authors: [Author1], [Author2], ...
    c. Keywords:
       - List approximately 5 key terms from the paper. 
       - Format each keyword with backticks, like this: `keyword`
