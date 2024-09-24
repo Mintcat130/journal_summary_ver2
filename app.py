@@ -190,6 +190,7 @@ if 'summary_content' in st.session_state and 'original_text' in st.session_state
     st.markdown(st.session_state.summary_content)
     
     st.markdown("### 요약 내용 복사")
+    st.text("코드블럭에 커서를 올리면 우측 상단에 생성되는 복사 버튼을 눌러 내용을 클립보드에 복사 가능합니다")
     st.code(st.session_state.summary_content, language="markdown")
 
 # 새로운 버튼 추가
@@ -203,6 +204,7 @@ if st.button("한번 더 다르게 요약해보기"):
             st.markdown(new_summary_content)
             
             st.markdown("### 새 요약 내용 복사")
+            st.text("코드블럭에 커서를 올리면 우측 상단에 생성되는 복사 버튼을 눌러 내용을 클립보드에 복사 가능합니다")
             st.code(new_summary_content, language="markdown")
 
         except Exception as e:
@@ -251,6 +253,7 @@ Text to summarize:
             st.markdown(detailed_summary_content)
             
             st.markdown("### 상세 요약 내용 복사")
+            st.text("코드블럭에 커서를 올리면 우측 상단에 생성되는 복사 버튼을 눌러 내용을 클립보드에 복사 가능합니다")
             st.code(detailed_summary_content, language="markdown")
 
         except Exception as e:
