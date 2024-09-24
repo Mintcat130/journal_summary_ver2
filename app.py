@@ -193,24 +193,7 @@ if 'summary_content' in st.session_state and 'original_text' in st.session_state
     st.text("코드블럭에 커서를 올리면 우측 상단에 생성되는 복사 버튼을 눌러 내용을 클립보드에 복사 가능합니다")
     st.code(st.session_state.summary_content, language="markdown")
 
-# 새로운 버튼 추가
-if st.button("한번 더 다르게 요약해보기"):
-    with st.spinner("다시 요약 중입니다..."):
-        try:
-            new_summary = summarize_with_anthropic(api_key, st.session_state.original_text)
-            new_summary_content = re.sub(r'</?summary>', '', new_summary).strip()
-            new_summary_content = re.sub(r'^Here is a summary of the research paper in Korean:\s*', '', new_summary_content, flags=re.IGNORECASE)
-            st.markdown("## 새로운 요약")
-            st.markdown(new_summary_content)
-            
-            st.markdown("### 새 요약 내용 복사")
-            st.text("코드블럭에 커서를 올리면 우측 상단에 생성되는 복사 버튼을 눌러 내용을 클립보드에 복사 가능합니다")
-            st.code(new_summary_content, language="markdown")
-
-        except Exception as e:
-            st.error(f"새로운 요약 중 오류 발생: {str(e)}")
-
-if st.button("더 길고 디테일하게 요약해보기"):
+if st.button("더 상세하게 요약해보기"):
     with st.spinner("상세 요약 중입니다..."):
         try:
             detailed_prompt = f"""Follow these instructions to create a more detailed summary:
